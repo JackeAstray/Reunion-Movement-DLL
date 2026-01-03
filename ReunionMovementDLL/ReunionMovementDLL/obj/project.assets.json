@@ -186,11 +186,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\Github\\Reunion-Movement\\C Sharp Dll\\ReunionMovementDLL\\ReunionMovementDLL\\ReunionMovementDLL.csproj",
+      "projectUniqueName": "E:\\Github\\Reunion-Movement-DLL\\ReunionMovementDLL\\ReunionMovementDLL\\ReunionMovementDLL.csproj",
       "projectName": "ReunionMovementDLL",
-      "projectPath": "E:\\Github\\Reunion-Movement\\C Sharp Dll\\ReunionMovementDLL\\ReunionMovementDLL\\ReunionMovementDLL.csproj",
+      "projectPath": "E:\\Github\\Reunion-Movement-DLL\\ReunionMovementDLL\\ReunionMovementDLL\\ReunionMovementDLL.csproj",
       "packagesPath": "C:\\Users\\98210\\.nuget\\packages\\",
-      "outputPath": "E:\\Github\\Reunion-Movement\\C Sharp Dll\\ReunionMovementDLL\\ReunionMovementDLL\\obj\\",
+      "outputPath": "E:\\Github\\Reunion-Movement-DLL\\ReunionMovementDLL\\ReunionMovementDLL\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

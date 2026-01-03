@@ -1,6 +1,6 @@
 is_global = true
 build_property.RootNamespace = ReunionMovementDLL
-build_property.ProjectDir = E:\Github\Reunion-Movement\C Sharp Dll\ReunionMovementDLL\ReunionMovementDLL\
+build_property.ProjectDir = E:\Github\Reunion-Movement-DLL\ReunionMovementDLL\ReunionMovementDLL\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.CsWinRTUseWindowsUIXamlProjections = false

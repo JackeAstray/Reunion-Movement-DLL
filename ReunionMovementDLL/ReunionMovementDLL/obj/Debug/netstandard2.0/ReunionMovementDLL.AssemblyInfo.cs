@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ReunionMovementDLL")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a2cc01f9f9fe8554200c20ab8494cf112e94fc6c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ce2928e1b7f9f1f5000950c192fd426107d9ef69")]
 [assembly: System.Reflection.AssemblyProductAttribute("ReunionMovementDLL")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ReunionMovementDLL")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
