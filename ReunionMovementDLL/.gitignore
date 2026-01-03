@@ -1,6 +1,6 @@
 /.vs/
-/[Rr]eunionMovementServer/[Bb]in
-/[Rr]eunionMovementServer/[Oo]bj/[Dd]ebug/*
-/[Rr]eunionMovementServer/[Oo]bj/[Rr]elease/*
-/[Rr]eunionMovementServer/[Oo]bj/[Aa]ny[Cc][Pp]rofile/*
-/[Rr]eunionMovementServer/[Pp]ublish/*
+/[Rr]eunionMovementDLL/[Bb]in/*
+/[Rr]eunionMovementDLL/[Oo]bj/[Dd]ebug/*
+/[Rr]eunionMovementDLL/[Oo]bj/[Rr]elease/*
+/[Rr]eunionMovementDLL/[Oo]bj/[Aa]ny[Cc][Pp]rofile/*
+/[Rr]eunionMovementDLL/[Pp]ublish/*

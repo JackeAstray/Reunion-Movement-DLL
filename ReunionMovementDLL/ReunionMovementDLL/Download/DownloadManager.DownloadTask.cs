@@ -111,7 +111,7 @@
             public static DownloadTask Create(string downloadPath, string downloadUri, string tag, int priority, int flushSize, float timeout, object userData)
             {
                 DownloadTask downloadTask = ReferencePool.Acquire<DownloadTask>();
-                // Use Interlocked to ensure serial increment is thread-safe.
+                // 使用Interlocked来确保串行增量是线程安全的。
                 downloadTask.Initialize(System.Threading.Interlocked.Increment(ref serial), tag, priority, userData);
                 downloadTask.downloadPath = downloadPath;
                 downloadTask.downloadUri = downloadUri;
