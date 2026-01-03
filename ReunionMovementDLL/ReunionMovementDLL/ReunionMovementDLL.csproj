@@ -1,16 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>8.0</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Scene\" />
-    <Folder Include="Tests\" />
-    <Folder Include="WebRequest\" />
+    <Compile Remove="Download\DownloaderSimple\**" />
+    <Compile Remove="Download\Downloader\**" />
+    <EmbeddedResource Remove="Download\DownloaderSimple\**" />
+    <EmbeddedResource Remove="Download\Downloader\**" />
+    <None Remove="Download\DownloaderSimple\**" />
+    <None Remove="Download\Downloader\**" />
   </ItemGroup>
 
 </Project>
