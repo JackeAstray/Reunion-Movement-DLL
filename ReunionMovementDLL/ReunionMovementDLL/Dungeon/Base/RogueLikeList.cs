@@ -47,6 +47,10 @@ namespace ReunionMovementDLL.Dungeon.Base
             wayId = -1;
         }
 
+        /// <summary>
+        /// 返回一个默认的 RogueLikeList 实例（用于测试或默认映射），
+        /// ID 按顺序为 0,1,2,3,4,5（outside, inside, room, entrance, exit, way）。
+        /// </summary>
         public RogueLikeList DefaultRogueLikeList() => new RogueLikeList(0, 1, 2, 3, 4, 5);
 
         /// <summary>
@@ -206,6 +210,8 @@ namespace ReunionMovementDLL.Dungeon.Base
         /// <summary>
         /// 将当前实例用另一个实例的数据更新。overwriteIfSet 为 true 时会用 other 的有效值覆盖当前值。
         /// </summary>
+        /// <param name="other">用于更新的数据来源。</param>
+        /// <param name="overwriteIfSet">如果为 true，则用 other 中的有效值覆盖当前值；否则只在当前值未设置（<0）时填充。</param>
         public void UpdateFrom(RogueLikeList other, bool overwriteIfSet = true)
         {
             if (other == null) return;
@@ -232,6 +238,8 @@ namespace ReunionMovementDLL.Dungeon.Base
         /// <summary>
         /// 将当前实例用数组更新，数组顺序为 outside, inside, room, entrance, exit, way；-1 表示不设置
         /// </summary>
+        /// <param name="arr">数组数据，缺失项使用 -1。</param>
+        /// <param name="overwriteIfSet">覆盖已设置字段的标志。</param>
         public void UpdateFrom(int[] arr, bool overwriteIfSet = true)
         {
             if (arr == null) return;
@@ -239,8 +247,8 @@ namespace ReunionMovementDLL.Dungeon.Base
             if (arr.Length > 1 && arr[1] >= 0) if (overwriteIfSet || insideWallId < 0) insideWallId = arr[1];
             if (arr.Length > 2 && arr[2] >= 0) if (overwriteIfSet || roomId < 0) roomId = arr[2];
             if (arr.Length > 3 && arr[3] >= 0) if (overwriteIfSet || entranceId < 0) entranceId = arr[3];
-            if (arr.Length > 5 && arr[5] >= 0) if (overwriteIfSet || exitId < 0) exitId = arr[4];
-            if (arr.Length > 4 && arr[4] >= 0) if (overwriteIfSet || wayId < 0) wayId = arr[5];
+            if (arr.Length > 4 && arr[4] >= 0) if (overwriteIfSet || exitId < 0) exitId = arr[4];
+            if (arr.Length > 5 && arr[5] >= 0) if (overwriteIfSet || wayId < 0) wayId = arr[5];
         }
 
         /// <summary>
