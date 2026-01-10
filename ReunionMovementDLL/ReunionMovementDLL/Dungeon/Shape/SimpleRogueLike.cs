@@ -6,14 +6,34 @@ using MatrixRange = ReunionMovementDLL.Dungeon.Base.Coordinate2DMatrix;
 
 namespace ReunionMovementDLL.Dungeon.Shape
 {
+    /// <summary>
+    /// 简单的RogueLike地图生成器：基于二叉空间划分的房间与道路生成器，实现IDrawer<int>接口。
+    /// </summary>
     public class SimpleRogueLike : RectBaseSimpleRogueLike<SimpleRogueLike>, IDrawer<int>
     {
+        /// <summary>
+        /// 随机数生成器，用于生成分割、房间和道路的随机数。
+        /// </summary>
         private RandomBase rand = new RandomBase();
 
+        /// <summary>
+        /// 表示按X方向分割的常量标识。
+        /// </summary>
         private const int RL_COUNT_X = 0;
+
+        /// <summary>
+        /// 表示按Y方向分割的常量标识。
+        /// </summary>
         private const int RL_COUNT_Y = 1;
 
         // Normal
+        /// <summary>
+        /// 在指定矩阵及范围内以常规算法生成RogueLike地图（房间 + 道路）。
+        /// </summary>
+        /// <param name="matrix_">目标矩阵（二维整型数组）。</param>
+        /// <param name="endX_">结束X坐标（不包含）。</param>
+        /// <param name="endY_">结束Y坐标（不包含）。</param>
+        /// <returns>始终返回true，表示绘制完成（当前实现不返回错误信息）。</returns>
         private bool DrawNormal(int[,] matrix_, uint endX_, uint endY_)
         {
             var mapDivCount = divisionMin + rand.Next(divisionRandMax);
@@ -39,6 +59,12 @@ namespace ReunionMovementDLL.Dungeon.Shape
             return true;
         }
 
+        /// <summary>
+        /// 创建分割（Binary Space Partitioning 风格），生成每个划分的边界并记录分割关系用于后续连通。
+        /// </summary>
+        /// <param name="dungeonRoad">用于存储分割后道路连接信息的数组（输出/输入）。</param>
+        /// <param name="dungeonDivision">用于存储每个划分的边界信息的数组（输出/输入）。</param>
+        /// <param name="mapDivCount">划分数量（元素个数）。</param>
         private void CreateDivision(uint[,] dungeonRoad, uint[,] dungeonDivision, uint mapDivCount)
         {
             uint divisionAfter = 0;
@@ -102,6 +128,12 @@ namespace ReunionMovementDLL.Dungeon.Shape
             }
         }
 
+        /// <summary>
+        /// 在每个划分内生成房间位置与大小，并对溢出/最小尺寸进行修正。
+        /// </summary>
+        /// <param name="dungeonRoom">输出房间数组（每个元素为房间边界）。</param>
+        /// <param name="dungeonDivision">输入划分数组，提供可生成房间的范围。</param>
+        /// <param name="mapDivCount">划分数量。</param>
         private void CreateRoom(uint[,] dungeonRoom, uint[,] dungeonDivision, uint mapDivCount)
         {
             for (int i = 0; i < mapDivCount; ++i)
@@ -148,6 +180,14 @@ namespace ReunionMovementDLL.Dungeon.Shape
             }
         }
 
+        /// <summary>
+        /// 根据分割关系在房间间创建道路，连接相邻或父子划分的房间。
+        /// </summary>
+        /// <param name="dungeonRoad">包含分割关系和临时道路数据的数组。</param>
+        /// <param name="dungeonRoom">房间数组，提供房间边界信息。</param>
+        /// <param name="dungeonDivision">划分数组，提供分割线位置用于铺设道路。</param>
+        /// <param name="matrix_">目标绘制矩阵，将道路标记为roadValue。</param>
+        /// <param name="mapDivCount">划分数量。</param>
         private void CreateRoad(uint[,] dungeonRoad, uint[,] dungeonRoom, uint[,] dungeonDivision, int[,] matrix_, uint mapDivCount)
         {
             for (uint roomBefore = 0, roomAfter = 0; roomBefore < mapDivCount; ++roomBefore)
@@ -191,6 +231,12 @@ namespace ReunionMovementDLL.Dungeon.Shape
             }
         }
 
+        /// <summary>
+        /// 将生成的房间填充到目标矩阵中，将房间区域设置为roomValue。
+        /// </summary>
+        /// <param name="dungeonRoom">房间数组，包含每个房间的边界信息。</param>
+        /// <param name="matrix_">目标矩阵。</param>
+        /// <param name="mapDivCount">划分/房间数量。</param>
         private void AssignRoom(uint[,] dungeonRoom, int[,] matrix_, uint mapDivCount)
         {
             for (uint i = 0; i < mapDivCount; ++i)
@@ -199,6 +245,11 @@ namespace ReunionMovementDLL.Dungeon.Shape
                         matrix_[j, k] = roomValue;
         }
 
+        /// <summary>
+        /// 在矩阵上绘制地图（入口方法），会计算有效的结束坐标并调用DrawNormal。
+        /// </summary>
+        /// <param name="matrix">目标矩阵。</param>
+        /// <returns>返回DrawNormal的结果（通常为true）。</returns>
         public bool Draw(int[,] matrix)
         {
             return DrawNormal(
@@ -207,11 +258,22 @@ namespace ReunionMovementDLL.Dungeon.Shape
                 (height == 0 || startY + height >= matrix.GetLength(0)) ? (uint)(matrix.Length == 0 ? 0 : matrix.GetLength(0)) : startY + height);
         }
 
+        /// <summary>
+        /// 绘制并返回日志（未实现）。
+        /// </summary>
+        /// <param name="matrix">目标矩阵。</param>
+        /// <param name="log">输出日志字符串（未实现）。</param>
+        /// <returns>当前实现抛出NotImplementedException。</returns>
         public bool Draw(int[,] matrix, out string log)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// 在矩阵上生成地图并返回矩阵引用（调用Draw）。
+        /// </summary>
+        /// <param name="matrix">目标矩阵。</param>
+        /// <returns>返回被修改的矩阵引用。</returns>
         public int[,] Create(int[,] matrix)
         {
             this.Draw(matrix);
@@ -219,21 +281,71 @@ namespace ReunionMovementDLL.Dungeon.Shape
         }
 
         /* Constructors */
+        /// <summary>
+        /// 默认构造函数，使用基类默认参数初始化。
+        /// </summary>
         public SimpleRogueLike() { }
 
+        /// <summary>
+        /// 使用指定房间值的构造函数。
+        /// </summary>
+        /// <param name="roomValue">房间在矩阵中使用的值。</param>
         public SimpleRogueLike(int roomValue) : base(roomValue) { }
 
+        /// <summary>
+        /// 使用指定房间值和道路值的构造函数。
+        /// </summary>
+        /// <param name="roomValue">房间在矩阵中使用的值。</param>
+        /// <param name="roadValue">道路在矩阵中使用的值。</param>
         public SimpleRogueLike(int roomValue, int roadValue) : base(roomValue, roadValue) { }
 
+        /// <summary>
+        /// 完整参数的构造函数，允许自定义划分和房间尺寸参数。
+        /// </summary>
+        /// <param name="roomValue">房间值。</param>
+        /// <param name="roadValue">道路值。</param>
+        /// <param name="divisionMin">最小划分数量。</param>
+        /// <param name="divisionRandMax">划分数量的随机上限。</param>
+        /// <param name="roomMinX">房间最小X尺寸/边距。</param>
+        /// <param name="roomRandMaxX">房间X方向随机尺寸上限。</param>
+        /// <param name="roomMinY">房间最小Y尺寸/边距。</param>
+        /// <param name="roomRandMaxY">房间Y方向随机尺寸上限。</param>
         public SimpleRogueLike(int roomValue, int roadValue, uint divisionMin,
             uint divisionRandMax, uint roomMinX, uint roomRandMaxX, uint roomMinY, uint roomRandMaxY) : base(roomValue, roadValue, divisionMin, divisionRandMax, roomMinX, roomRandMaxX, roomMinY, roomRandMaxY) { }
 
+        /// <summary>
+        /// 使用给定矩阵范围的构造函数（仅设置绘制范围）。
+        /// </summary>
+        /// <param name="matrixRange">矩阵范围（x,y,w,h）。</param>
         public SimpleRogueLike(MatrixRange matrixRange) : base(matrixRange) { }
 
+        /// <summary>
+        /// 使用矩阵范围和房间值的构造函数。
+        /// </summary>
+        /// <param name="matrixRange">矩阵范围。</param>
+        /// <param name="roomValue">房间值。</param>
         public SimpleRogueLike(MatrixRange matrixRange, int roomValue) : base(matrixRange, roomValue) { }
 
+        /// <summary>
+        /// 使用矩阵范围、房间值和道路值的构造函数。
+        /// </summary>
+        /// <param name="matrixRange">矩阵范围。</param>
+        /// <param name="roomValue">房间值。</param>
+        /// <param name="roadValue">道路值。</param>
         public SimpleRogueLike(MatrixRange matrixRange, int roomValue, int roadValue) : base(matrixRange, roomValue, roadValue) { }
 
+        /// <summary>
+        /// 使用完整参数（范围、房间/道路值、划分与房间尺寸控制）构造。
+        /// </summary>
+        /// <param name="matrixRange">矩阵范围。</param>
+        /// <param name="roomValue">房间值。</param>
+        /// <param name="roadValue">道路值。</param>
+        /// <param name="divisionMin">最小划分数量。</param>
+        /// <param name="divisionRandMax">划分随机上限。</param>
+        /// <param name="roomMinX">房间最小X尺寸。</param>
+        /// <param name="roomRandMaxX">房间X方向随机上限。</param>
+        /// <param name="roomMinY">房间最小Y尺寸。</param>
+        /// <param name="roomRandMaxY">房间Y方向随机上限。</param>
         public SimpleRogueLike(MatrixRange matrixRange, int roomValue, int roadValue, uint divisionMin,
             uint divisionRandMax, uint roomMinX, uint roomRandMaxX, uint roomMinY, uint roomRandMaxY)
             : base(matrixRange, roomValue, roadValue, divisionMin, divisionRandMax, roomMinX, roomRandMaxX, roomMinY, roomRandMaxY) { }
