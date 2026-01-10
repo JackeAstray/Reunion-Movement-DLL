@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReunionMovementDLL.Dungeon.Shape;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
@@ -119,7 +120,7 @@ namespace ReunionMovementDLL.Dungeon.Util
         private void Generate()
         {
             if (height <= 0 || width <= 0)
-                throw new ArgumentException("height and width must be positive");
+                throw new ArgumentException("高度和宽度必须为正数");
 
             matrix = new float[height, width];
             terrainGenerator.DrawNormalize(matrix);
@@ -175,7 +176,7 @@ namespace ReunionMovementDLL.Dungeon.Util
         private float[,,] GetTexture(float[,] matrix, int w, int h)
         {
             if (matrix == null) throw new ArgumentNullException(nameof(matrix));
-            if (textureToHeight == null || textureToHeight.Count == 0) throw new ArgumentException("textureToHeight must be provided");
+            if (textureToHeight == null || textureToHeight.Count == 0) throw new ArgumentException("必须提供纹理转高度");
 
             var txCount = this.texture2D.Count;
             var map = new float[w, h, txCount];

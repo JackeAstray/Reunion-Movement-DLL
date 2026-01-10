@@ -137,6 +137,11 @@ namespace ReunionMovementDLL.Dungeon.Console
             }
         }
 
+        public bool Draw(int[,] matrix)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// 默认构造函数，创建一个默认配置的输出器（使用数字模式）。
         /// </summary>

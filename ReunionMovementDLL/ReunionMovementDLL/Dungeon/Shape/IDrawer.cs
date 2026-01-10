@@ -15,6 +15,13 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// </summary>
         /// <param name="matrix"></param>
         /// <returns></returns>
+        bool Draw(TMatrixVar[,] matrix);
+
+        /// <summary>
+        /// 绘制矩阵
+        /// </summary>
+        /// <param name="matrix"></param>
+        /// <returns></returns>
         bool Draw(TMatrixVar[,] matrix, out string log);
     }
 }

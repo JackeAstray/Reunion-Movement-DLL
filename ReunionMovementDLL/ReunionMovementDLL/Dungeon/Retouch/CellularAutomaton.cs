@@ -23,11 +23,14 @@ namespace ReunionMovementDLL.Dungeon.Retouch
         /// 成功时返回 true，并通过 out 参数返回日志（当前未使用）。
         /// </summary>
         /// <param name="matrix">目标整数矩阵</param>
-        /// <param name="log">输出日志（可为 null）</param>
+        public bool Draw(int[,] matrix)
+        {
+            return DrawNormal(matrix);
+        }
+
         public bool Draw(int[,] matrix, out string log)
         {
-            log = null;
-            return DrawNormal(matrix);
+            throw new NotImplementedException();
         }
 
         /**

@@ -1,6 +1,4 @@
-using System;
-
-namespace ReunionMovementDLL.Dungeon.Util
+﻿namespace ReunionMovementDLL.Dungeon.Shape
 {
     /// <summary>
     /// 地形生成器接口。
