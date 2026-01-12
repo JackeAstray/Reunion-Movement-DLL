@@ -26,10 +26,6 @@ namespace ReunionMovementDLL.Dungeon.Base
         /// </summary>
         public int entranceId { get; set; }
         /// <summary>
-        /// 出口ID
-        /// </summary>
-        public int exitId { get; set; }
-        /// <summary>
         /// 道路ID
         /// </summary>
         public int wayId { get; set; }
@@ -43,15 +39,14 @@ namespace ReunionMovementDLL.Dungeon.Base
             insideWallId = -1;
             roomId = -1;
             entranceId = -1;
-            exitId = -1;
             wayId = -1;
         }
 
         /// <summary>
         /// 返回一个默认的 RogueLikeList 实例（用于测试或默认映射），
-        /// ID 按顺序为 0,1,2,3,4,5（outside, inside, room, entrance, exit, way）。
+        /// ID 按顺序为 0,1,2,3,4（outside, inside, room, entrance, way）。
         /// </summary>
-        public RogueLikeList DefaultRogueLikeList() => new RogueLikeList(0, 1, 2, 3, 4, 5);
+        public RogueLikeList DefaultRogueLikeList() => new RogueLikeList(0, 1, 2, 3, 4);
 
         /// <summary>
         /// 使用墙ID和道路ID创建实例
@@ -65,7 +60,6 @@ namespace ReunionMovementDLL.Dungeon.Base
             this.roomId = wayId;
             this.entranceId = wayId;
             this.wayId = wayId;
-            this.exitId = wayId;
         }
 
         /// <summary>
@@ -80,7 +74,6 @@ namespace ReunionMovementDLL.Dungeon.Base
             this.insideWallId = wallId;
             this.roomId = roomId;
             this.entranceId = roomId;
-            this.exitId = roomId;
             this.wayId = wayId;
         }
 
@@ -97,20 +90,18 @@ namespace ReunionMovementDLL.Dungeon.Base
             this.insideWallId = wallId;
             this.roomId = roomId;
             this.entranceId = entranceId;
-            this.exitId = entranceId;
             this.wayId = wayId;
         }
 
         /// <summary>
         /// 使用指定ID创建实例
         /// </summary>
-        public RogueLikeList(int outsideWallId, int insideWallId, int roomId, int entranceId, int exitId, int wayId)
+        public RogueLikeList(int outsideWallId, int insideWallId, int roomId, int entranceId, int wayId)
         {
             this.outsideWallId = outsideWallId;
             this.insideWallId = insideWallId;
             this.roomId = roomId;
             this.entranceId = entranceId;
-            this.exitId = exitId;
             this.wayId = wayId;
         }
 
@@ -124,44 +115,43 @@ namespace ReunionMovementDLL.Dungeon.Base
             insideWallId = other.insideWallId;
             roomId = other.roomId;
             entranceId = other.entranceId;
-            exitId = other.exitId;
             wayId = other.wayId;
         }
 
         /// <summary>
         /// 创建一个实例，参数可选（使用 -1 代表未设置）
         /// </summary>
-        public static RogueLikeList Create(int outsideWallId = -1, int insideWallId = -1, int roomId = -1, int entranceId = -1, int exitId = -1, int wayId = -1)
+        public static RogueLikeList Create(int outsideWallId = -1, int insideWallId = -1, int roomId = -1, int entranceId = -1, int wayId = -1)
         {
-            return new RogueLikeList(outsideWallId, insideWallId, roomId, entranceId, exitId, wayId);
+            return new RogueLikeList(outsideWallId, insideWallId, roomId, entranceId, wayId);
         }
 
         /// <summary>
-        /// 从可枚举的整数创建，顺序为 outside, inside, room, entrance, exit, way；缺少项设为 -1
+        /// 从可枚举的整数创建，顺序为 outside, inside, room, entrance, way；缺少项设为 -1
         /// </summary>
         public static RogueLikeList FromEnumerable(IEnumerable<int> values)
         {
             if (values == null) throw new ArgumentNullException(nameof(values));
-            int[] arr = new int[6] { -1, -1, -1, -1, -1, -1 };
+            int[] arr = new int[5] { -1, -1, -1, -1, -1 };
             int i = 0;
             foreach (var v in values)
             {
-                if (i >= 6) break;
+                if (i >= 5) break;
                 arr[i++] = v;
             }
             return FromArray(arr);
         }
 
         /// <summary>
-        /// 将属性作为数组返回（顺序：outside, inside, room, entrance, exit, way）
+        /// 将属性作为数组返回（顺序：outside, inside, room, entrance, way）
         /// </summary>
         public int[] ToArray()
         {
-            return new[] { outsideWallId, insideWallId, roomId, entranceId, exitId, wayId };
+            return new[] { outsideWallId, insideWallId, roomId, entranceId, wayId };
         }
 
         /// <summary>
-        /// 从数组创建实例。数组可以少于6个元素，缺失项将设为-1。
+        /// 从数组创建实例。数组可以少于5个元素，缺失项将设为-1。
         /// </summary>
         public static RogueLikeList FromArray(int[] arr)
         {
@@ -172,8 +162,7 @@ namespace ReunionMovementDLL.Dungeon.Base
                 GetOrDefault(arr, 1),
                 GetOrDefault(arr, 2),
                 GetOrDefault(arr, 3),
-                GetOrDefault(arr, 4),
-                GetOrDefault(arr, 5)
+                GetOrDefault(arr, 4)
             );
         }
 
@@ -202,7 +191,6 @@ namespace ReunionMovementDLL.Dungeon.Base
                 Choose(first.insideWallId, second.insideWallId),
                 Choose(first.roomId, second.roomId),
                 Choose(first.entranceId, second.entranceId),
-                Choose(first.exitId, second.exitId),
                 Choose(first.wayId, second.wayId)
             );
         }
@@ -221,7 +209,6 @@ namespace ReunionMovementDLL.Dungeon.Base
                 if (other.insideWallId >= 0) insideWallId = other.insideWallId;
                 if (other.roomId >= 0) roomId = other.roomId;
                 if (other.entranceId >= 0) entranceId = other.entranceId;
-                if (other.exitId >= 0) exitId = other.exitId;
                 if (other.wayId >= 0) wayId = other.wayId;
             }
             else
@@ -230,13 +217,12 @@ namespace ReunionMovementDLL.Dungeon.Base
                 if (insideWallId < 0 && other.insideWallId >= 0) insideWallId = other.insideWallId;
                 if (roomId < 0 && other.roomId >= 0) roomId = other.roomId;
                 if (entranceId < 0 && other.entranceId >= 0) entranceId = other.entranceId;
-                if (exitId < 0 && other.exitId >= 0) exitId = other.exitId;
                 if (wayId < 0 && other.wayId >= 0) wayId = other.wayId;
             }
         }
 
         /// <summary>
-        /// 将当前实例用数组更新，数组顺序为 outside, inside, room, entrance, exit, way；-1 表示不设置
+        /// 将当前实例用数组更新，数组顺序为 outside, inside, room, entrance, way；-1 表示不设置
         /// </summary>
         /// <param name="arr">数组数据，缺失项使用 -1。</param>
         /// <param name="overwriteIfSet">覆盖已设置字段的标志。</param>
@@ -247,8 +233,7 @@ namespace ReunionMovementDLL.Dungeon.Base
             if (arr.Length > 1 && arr[1] >= 0) if (overwriteIfSet || insideWallId < 0) insideWallId = arr[1];
             if (arr.Length > 2 && arr[2] >= 0) if (overwriteIfSet || roomId < 0) roomId = arr[2];
             if (arr.Length > 3 && arr[3] >= 0) if (overwriteIfSet || entranceId < 0) entranceId = arr[3];
-            if (arr.Length > 4 && arr[4] >= 0) if (overwriteIfSet || exitId < 0) exitId = arr[4];
-            if (arr.Length > 5 && arr[5] >= 0) if (overwriteIfSet || wayId < 0) wayId = arr[5];
+            if (arr.Length > 4 && arr[4] >= 0) if (overwriteIfSet || wayId < 0) wayId = arr[4];
         }
 
         /// <summary>
@@ -256,7 +241,7 @@ namespace ReunionMovementDLL.Dungeon.Base
         /// </summary>
         public RogueLikeList Clone()
         {
-            return new RogueLikeList(outsideWallId, insideWallId, roomId, entranceId, exitId, wayId);
+            return new RogueLikeList(outsideWallId, insideWallId, roomId, entranceId, wayId);
         }
 
         /// <summary>
@@ -264,7 +249,7 @@ namespace ReunionMovementDLL.Dungeon.Base
         /// </summary>
         public bool AllIdsValid()
         {
-            return outsideWallId >= 0 && insideWallId >= 0 && roomId >= 0 && entranceId >= 0 && exitId >= 0 && wayId >= 0;
+            return outsideWallId >= 0 && insideWallId >= 0 && roomId >= 0 && entranceId >= 0 && wayId >= 0;
         }
 
         /// <summary>
@@ -272,19 +257,18 @@ namespace ReunionMovementDLL.Dungeon.Base
         /// </summary>
         public bool AnyIdValid()
         {
-            return outsideWallId >= 0 || insideWallId >= 0 || roomId >= 0 || entranceId >= 0 || exitId >= 0 || wayId >= 0;
+            return outsideWallId >= 0 || insideWallId >= 0 || roomId >= 0 || entranceId >= 0 || wayId >= 0;
         }
 
         /// <summary>
-        /// 支持元组解构 (outside, inside, room, entrance, exit, way)
+        /// 支持元组解构 (outside, inside, room, entrance, way)
         /// </summary>
-        public void Deconstruct(out int outside, out int inside, out int room, out int entrance, out int exit, out int way)
+        public void Deconstruct(out int outside, out int inside, out int room, out int entrance, out int way)
         {
             outside = outsideWallId;
             inside = insideWallId;
             room = roomId;
             entrance = entranceId;
-            exit = exitId;
             way = wayId;
         }
 
@@ -293,7 +277,7 @@ namespace ReunionMovementDLL.Dungeon.Base
         /// </summary>
         public override string ToString()
         {
-            return $"RogueLikeList(outside:{outsideWallId}, inside:{insideWallId}, room:{roomId}, entrance:{entranceId}, exit:{exitId}, way:{wayId})";
+            return $"RogueLikeList(outside:{outsideWallId}, inside:{insideWallId}, room:{roomId}, entrance:{entranceId}, way:{wayId})";
         }
 
         /// <summary>
@@ -307,7 +291,6 @@ namespace ReunionMovementDLL.Dungeon.Base
                 && insideWallId == other.insideWallId
                 && roomId == other.roomId
                 && entranceId == other.entranceId
-                && exitId == other.exitId
                 && wayId == other.wayId;
         }
 
@@ -334,7 +317,6 @@ namespace ReunionMovementDLL.Dungeon.Base
                 hash = hash * 31 + insideWallId.GetHashCode();
                 hash = hash * 31 + roomId.GetHashCode();
                 hash = hash * 31 + entranceId.GetHashCode();
-                hash = hash * 31 + exitId.GetHashCode();
                 hash = hash * 31 + wayId.GetHashCode();
                 return hash;
             }

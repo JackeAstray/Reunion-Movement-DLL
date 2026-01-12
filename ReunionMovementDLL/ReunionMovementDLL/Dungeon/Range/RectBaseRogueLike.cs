@@ -585,17 +585,16 @@ namespace ReunionMovementDLL.Dungeon.Range
         }
 
         /// <summary>
-        /// 使用单独的 ID 值构造 RogueLikeList （outsideWall, insideWall, room, entrance, exit, way）。
+        /// 使用单独的 ID 值构造 RogueLikeList （outsideWall, insideWall, room, entrance, way）。
         /// </summary>
         /// <param name="outsideWallId">外墙 ID。</param>
         /// <param name="insideWallId">内墙 ID。</param>
         /// <param name="roomId">房间 ID。</param>
         /// <param name="entranceId">入口 ID。</param>
-        /// <param name="exitId">出口 ID。</param>
         /// <param name="wayId">道路 ID。</param>
-        public RectBaseRogueLike(int outsideWallId, int insideWallId, int roomId, int entranceId, int exitId, int wayId)
+        public RectBaseRogueLike(int outsideWallId, int insideWallId, int roomId, int entranceId, int wayId)
         {
-            this.rogueLikeList = new RogueLikeList(outsideWallId, insideWallId, roomId, entranceId, exitId, wayId);
+            this.rogueLikeList = new RogueLikeList(outsideWallId, insideWallId, roomId, entranceId, wayId);
         }
 
         /// <summary>
@@ -605,13 +604,12 @@ namespace ReunionMovementDLL.Dungeon.Range
         /// <param name="insideWallId">内墙 ID。</param>
         /// <param name="roomId">房间 ID。</param>
         /// <param name="entranceId">入口 ID。</param>
-        /// <param name="exitId">出口 ID。</param>
         /// <param name="wayId">道路 ID。</param>
         /// <param name="maxWay">最大道路数。</param>
-        public RectBaseRogueLike(int outsideWallId, int insideWallId, int roomId, int entranceId, int exitId, int wayId,
+        public RectBaseRogueLike(int outsideWallId, int insideWallId, int roomId, int entranceId, int wayId,
             uint maxWay)
         {
-            this.rogueLikeList = new RogueLikeList(outsideWallId, insideWallId, roomId, entranceId, exitId, wayId);
+            this.rogueLikeList = new RogueLikeList(outsideWallId, insideWallId, roomId, entranceId, wayId);
             this.maxWay = maxWay;
         }
 
@@ -623,14 +621,13 @@ namespace ReunionMovementDLL.Dungeon.Range
         /// <param name="insideWallId">内墙 ID。</param>
         /// <param name="roomId">房间 ID。</param>
         /// <param name="entranceId">入口 ID。</param>
-        /// <param name="exitId">出口 ID。</param>
         /// <param name="wayId">道路 ID。</param>
         /// <param name="maxWay">最大道路数。</param>
         /// <param name="roomRange">房间范围。</param>
-        public RectBaseRogueLike(int outsideWallId, int insideWallId, int roomId, int entranceId, int exitId, int wayId,
+        public RectBaseRogueLike(int outsideWallId, int insideWallId, int roomId, int entranceId, int wayId,
             uint maxWay, MatrixRange roomRange)
         {
-            this.rogueLikeList = new RogueLikeList(outsideWallId, insideWallId, roomId, entranceId, exitId, wayId);
+            this.rogueLikeList = new RogueLikeList(outsideWallId, insideWallId, roomId, entranceId, wayId);
             this.maxWay = maxWay;
             this.roomRange = roomRange;
         }
@@ -642,15 +639,14 @@ namespace ReunionMovementDLL.Dungeon.Range
         /// <param name="insideWallId">内墙 ID。</param>
         /// <param name="roomId">房间 ID。</param>
         /// <param name="entranceId">入口 ID。</param>
-        /// <param name="exitId">出口 ID。</param>
         /// <param name="wayId">道路 ID。</param>
         /// <param name="maxWay">最大道路数。</param>
         /// <param name="roomRange">房间范围。</param>
         /// <param name="wayRange">道路范围。</param>
-        public RectBaseRogueLike(int outsideWallId, int insideWallId, int roomId, int entranceId, int exitId, int wayId,
+        public RectBaseRogueLike(int outsideWallId, int insideWallId, int roomId, int entranceId, int wayId,
             uint maxWay, MatrixRange roomRange, MatrixRange wayRange)
         {
-            this.rogueLikeList = new RogueLikeList(outsideWallId, insideWallId, roomId, entranceId, exitId, wayId);
+            this.rogueLikeList = new RogueLikeList(outsideWallId, insideWallId, roomId, entranceId, wayId);
             this.maxWay = maxWay;
             this.roomRange = roomRange;
             this.wayRange = wayRange;

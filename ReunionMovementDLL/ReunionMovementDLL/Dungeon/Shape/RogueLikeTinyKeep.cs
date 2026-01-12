@@ -10,41 +10,41 @@ using MatrixRange = ReunionMovementDLL.Dungeon.Base.Coordinate2DMatrix;
 namespace ReunionMovementDLL.Dungeon.Shape
 {
     /// <summary>
-    /// TinyKeep ·ç¸ñµÄ RogueLike Éú³ÉÆ÷£¨Delaunay/MST ·ç¸ñ½üËÆÊµÏÖ£©¡£
-    /// Ãû³ÆÎª RogueLikeTinyKeep¡£
-    /// ÊµÏÖÁ÷³Ì£º²ÉÑù·¿¼äÖĞĞÄ -> ·ÅÖÃ·¿¼ä -> ¼ÆËã×îĞ¡Éú³ÉÊ÷£¨Kruskal£© -> Éú³É×ßÀÈ -> ¿ÉÑ¡Ìí¼Ó¶îÍâ±ßĞÎ³É»·Â·¡£
-    /// ×¢£ºÎª¼ò»¯ÊµÏÖ£¬Èı½Ç»¯²ÉÓÃÈ«Á¬±ß¼¯ºÏÔÙ¹¹Ôì MST£¨ÊÊÓÃÓÚ·¿¼äÊı½ÏÉÙµÄ³¡¾°£©¡£
+    /// TinyKeep é£æ ¼çš„ RogueLike ç”Ÿæˆå™¨ï¼ˆDelaunay/MST é£æ ¼è¿‘ä¼¼å®ç°ï¼‰ã€‚
+    /// åç§°ä¸º RogueLikeTinyKeepã€‚
+    /// å®ç°æµç¨‹ï¼šé‡‡æ ·æˆ¿é—´ä¸­å¿ƒ -> æ”¾ç½®æˆ¿é—´ -> è®¡ç®—æœ€å°ç”Ÿæˆæ ‘ï¼ˆPrimï¼‰ -> ç”Ÿæˆèµ°å»Š -> å¯é€‰æ·»åŠ é¢å¤–è¾¹å½¢æˆç¯è·¯ã€‚
+    /// æ³¨ï¼šä¸ºç®€åŒ–å®ç°ï¼Œä¸‰è§’åŒ–é‡‡ç”¨å…¨è¿è¾¹é›†åˆå†æ„é€  MSTï¼ˆé€‚ç”¨äºæˆ¿é—´æ•°è¾ƒå°‘çš„åœºæ™¯ï¼‰ã€‚
     /// </summary>
     public sealed class RogueLikeTinyKeep : RectBaseRogueLike<RogueLikeTinyKeep>, IDrawer<int>
     {
         private DungeonRandom rand = new DungeonRandom();
 
         /// <summary>
-        /// Ä¬ÈÏ¹¹Ôìº¯Êı£¬´´½¨ RogueLikeTinyKeep µÄÊµÀı¡£
+        /// é»˜è®¤æ„é€ å‡½æ•°ï¼Œåˆ›å»º RogueLikeTinyKeep çš„å®ä¾‹ã€‚
         /// </summary>
         public RogueLikeTinyKeep()
         {
         }
 
         /// <summary>
-        /// Ê¹ÓÃ¾ØÕó·¶Î§¹¹ÔìÆ÷£¬ÉèÖÃ»æÖÆÇøÓò¡£
+        /// ä½¿ç”¨çŸ©é˜µèŒƒå›´æ„é€ å™¨ï¼Œè®¾ç½®ç»˜åˆ¶åŒºåŸŸã€‚
         /// </summary>
-        /// <param name="matrixRange">¾ØÕó·¶Î§£¨ÆğµãÓë´óĞ¡£©¡£param>
+        /// <param name="matrixRange">çŸ©é˜µèŒƒå›´ï¼ˆèµ·ç‚¹ä¸å¤§å°ï¼‰ã€‚param>
         public RogueLikeTinyKeep(MatrixRange matrixRange) : base(matrixRange) { }
 
         /// <summary>
-        /// Ö¸¶¨»æÖÆÖµÓë×î´óÍ¨Â·ÊıµÄ¹¹Ôìº¯Êı¡£
+        /// æŒ‡å®šç»˜åˆ¶å€¼ä¸æœ€å¤§é€šè·¯æ•°çš„æ„é€ å‡½æ•°ã€‚
         /// </summary>
-        /// <param name="drawValue">»æÖÆÖµÁĞ±í£¨RogueLikeList£©¡£param>
-        /// <param name="maxWay">×î´óÍ¨Â·Êı¡£</param>
+        /// <param name="drawValue">ç»˜åˆ¶å€¼åˆ—è¡¨ï¼ˆRogueLikeListï¼‰ã€‚param>
+        /// <param name="maxWay">æœ€å¤§é€šè·¯æ•°ã€‚</param>
         public RogueLikeTinyKeep(RogueLikeList drawValue, uint maxWay) : base(drawValue, maxWay) { }
 
         /// <summary>
-        /// ÔÚ¸ø¶¨¾ØÕóÉÏ»æÖÆµØÀÎ£¨Èë¿Ú·½·¨£©¡£
-        /// Èç¹ûÆğÊ¼×ø±êÔ½½ç·µ»Ø false£¬·ñÔòµ÷ÓÃºËĞÄ»æÖÆº¯Êı DrawNormal¡£
+        /// åœ¨ç»™å®šçŸ©é˜µä¸Šç»˜åˆ¶åœ°ç‰¢ï¼ˆå…¥å£æ–¹æ³•ï¼‰ã€‚
+        /// å¦‚æœèµ·å§‹åæ ‡è¶Šç•Œè¿”å› falseï¼Œå¦åˆ™è°ƒç”¨æ ¸å¿ƒç»˜åˆ¶å‡½æ•° DrawNormalã€‚
         /// </summary>
-        /// <param name="matrix">Ä¿±ê¾ØÕó£¨ÕûĞÍ¶şÎ¬Êı×é£©¡£param>
-        /// <returns>ÊÇ·ñ³É¹¦»æÖÆ¡£</returns>
+        /// <param name="matrix">ç›®æ ‡çŸ©é˜µï¼ˆæ•´å‹äºŒç»´æ•°ç»„ï¼‰ã€‚param>
+        /// <returns>æ˜¯å¦æˆåŠŸç»˜åˆ¶ã€‚</returns>
         public bool Draw(int[,] matrix)
         {
             if (startX >= MatrixUtil.GetX(matrix) || startY >= MatrixUtil.GetY(matrix)) return false;
@@ -52,11 +52,11 @@ namespace ReunionMovementDLL.Dungeon.Shape
         }
 
         /// <summary>
-        /// ´øÈÕÖ¾µÄ»æÖÆÈë¿Ú£¨µ±Ç°½ö·µ»ØÈÕÖ¾Õ¼Î»£©£¬Êµ¼ÊĞĞÎªÓë Draw ÏàÍ¬¡£
+        /// å¸¦æ—¥å¿—çš„ç»˜åˆ¶å…¥å£ï¼ˆå½“å‰ä»…è¿”å›æ—¥å¿—å ä½ï¼‰ï¼Œå®é™…è¡Œä¸ºä¸ Draw ç›¸åŒã€‚
         /// </summary>
-        /// <param name="matrix">Ä¿±ê¾ØÕó¡£</param>
-        /// <param name="log">Êä³öÈÕÖ¾£¨out£©¡£</param>
-        /// <returns>ÊÇ·ñ³É¹¦»æÖÆ¡£</returns>
+        /// <param name="matrix">ç›®æ ‡çŸ©é˜µã€‚</param>
+        /// <param name="log">è¾“å‡ºæ—¥å¿—ï¼ˆoutï¼‰ã€‚</param>
+        /// <returns>æ˜¯å¦æˆåŠŸç»˜åˆ¶ã€‚</returns>
         public bool Draw(int[,] matrix, out string log)
         {
             log = string.Empty;
@@ -64,10 +64,10 @@ namespace ReunionMovementDLL.Dungeon.Shape
         }
 
         /// <summary>
-        /// ÔÚ¾ØÕóÉÏ´´½¨µØÀÎ²¢·µ»Ø¸Ã¾ØÕóÒıÓÃ£¨±ã½İ°ü×°Æ÷£©¡£
+        /// åœ¨çŸ©é˜µä¸Šåˆ›å»ºåœ°ç‰¢å¹¶è¿”å›è¯¥çŸ©é˜µå¼•ç”¨ï¼ˆä¾¿æ·åŒ…è£…å™¨ï¼‰ã€‚
         /// </summary>
-        /// <param name="matrix">Ä¿±ê¾ØÕó¡£</param>
-        /// <returns>±»ĞŞ¸ÄµÄ¾ØÕóÒıÓÃ¡£</returns>
+        /// <param name="matrix">ç›®æ ‡çŸ©é˜µã€‚</param>
+        /// <returns>è¢«ä¿®æ”¹çš„çŸ©é˜µå¼•ç”¨ã€‚</returns>
         public int[,] Create(int[,] matrix)
         {
             this.Draw(matrix);
@@ -75,11 +75,11 @@ namespace ReunionMovementDLL.Dungeon.Shape
         }
 
         /// <summary>
-        /// ºËĞÄ»æÖÆÂß¼­£º²ÉÑù·¿¼äÖĞĞÄ¡¢·ÅÖÃ·¿¼ä¡¢¹¹½¨È«Á¬±ß²¢¼ÆËã×îĞ¡Éú³ÉÊ÷£¨Kruskal£©£¬
-        /// ×îºóÔÚ MST µÄ±ßÉÏ¿ªÔä×ßÀÈ²¢¿ÉÑ¡Ìí¼Ó¶îÍâ±ßÒÔĞÎ³ÉÑ­»·¡£
+        /// æ ¸å¿ƒç»˜åˆ¶é€»è¾‘ï¼šé‡‡æ ·æˆ¿é—´ä¸­å¿ƒã€æ”¾ç½®æˆ¿é—´ã€æ„å»ºå…¨è¿è¾¹å¹¶è®¡ç®—æœ€å°ç”Ÿæˆæ ‘ï¼ˆPrimï¼‰ï¼Œ
+        /// æœ€ååœ¨ MST çš„è¾¹ä¸Šå¼€å‡¿èµ°å»Šå¹¶å¯é€‰æ·»åŠ é¢å¤–è¾¹ä»¥å½¢æˆå¾ªç¯ã€‚
         /// </summary>
-        /// <param name="matrix">Ä¿±ê¾ØÕó¡£</param>
-        /// <returns>ÊÇ·ñ³É¹¦Éú³ÉµØÀÎ¡£</returns>
+        /// <param name="matrix">ç›®æ ‡çŸ©é˜µã€‚</param>
+        /// <returns>æ˜¯å¦æˆåŠŸç”Ÿæˆåœ°ç‰¢ã€‚</returns>
         private bool DrawNormal(int[,] matrix)
         {
             var width = MatrixUtil.GetX(matrix);
@@ -89,16 +89,16 @@ namespace ReunionMovementDLL.Dungeon.Shape
 
             if (areaW <= 4 || areaH <= 4) return false;
 
-            // Ê¹ÓÃ¼òµ¥¾Ü¾ø³éÑù·½·¨¶Ô·¿¼äÖĞĞÄ½øĞĞ²ÉÑù£¬ÒÔÈ·±£×îĞ¡¼ä¾à
+            // ä½¿ç”¨ç®€å•æ‹’ç»æŠ½æ ·æ–¹æ³•å¯¹æˆ¿é—´ä¸­å¿ƒè¿›è¡Œé‡‡æ ·ï¼Œä»¥ç¡®ä¿æœ€å°é—´è·
             var minSep = Math.Max(2, (int)((roomRange.x + roomRange.w) / 2));
-            // µ±·¿¼äÊı·Ç³£¶àÊ±£¬ÔÊĞí²ÉÑù¸ü¶àµã£»µ«²»³¬¹ı maxWay ÇÒ²»³¬¹ıÇøÓò¿ÉÈİÄÉÊıÁ¿
+            // å½“æˆ¿é—´æ•°éå¸¸å¤šæ—¶ï¼Œå…è®¸é‡‡æ ·æ›´å¤šç‚¹ï¼›ä½†ä¸è¶…è¿‡ maxWay ä¸”ä¸è¶…è¿‡åŒºåŸŸå¯å®¹çº³æ•°é‡
             int estimatedCapacity = Math.Max(1, (areaW * areaH) / Math.Max(1, minSep * minSep));
             int target = (int)Math.Max(3, Math.Min((int)maxWay, Math.Max(20, estimatedCapacity)));
 
             var centers = SamplePoints(areaW, areaH, target, minSep);
             if (centers.Count < 2) return false;
 
-            // ·ÅÖÃ·¿¼ä
+            // æ”¾ç½®æˆ¿é—´
             var rooms = new List<RogueLikeOutputNumber>();
             foreach (var c in centers)
             {
@@ -115,10 +115,10 @@ namespace ReunionMovementDLL.Dungeon.Shape
 
             if (rooms.Count < 2) return false;
 
-            // µã¼¯ºÏ£¨·¿¼äÖĞĞÄ£©
+            // ç‚¹é›†åˆï¼ˆæˆ¿é—´ä¸­å¿ƒï¼‰
             var pts = rooms.Select(r => new PairInt(r.x + r.w / 2, r.y + r.h / 2)).ToArray();
 
-            // Ê¹ÓÃ´ø¶ÑµÄ Prim Ëã·¨¹¹½¨×îĞ¡Éú³ÉÊ÷£¨¼õÉÙÑ¡Ôñ³É±¾£©
+            // ä½¿ç”¨å¸¦å †çš„ Prim ç®—æ³•æ„å»ºæœ€å°ç”Ÿæˆæ ‘ï¼ˆå‡å°‘é€‰æ‹©æˆæœ¬ï¼‰
             int n = pts.Length;
             var inMst = new bool[n];
             var minDist = new int[n];
@@ -141,7 +141,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
                     mst.Add(new Edge(node.Parent, u, node.Key));
                 }
 
-                // ¸üĞÂÁÚ¾Ó¾àÀë£¨complete graph distances)
+                // æ›´æ–°é‚»å±…è·ç¦»ï¼ˆcomplete graph distances)
                 for (int v = 0; v < n; ++v)
                 {
                     if (inMst[v] || v == u) continue;
@@ -157,7 +157,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
                 }
             }
 
-            // Ê¹ÓÃ»ùÓÚ¿Õ¼ä·ÖÍ°µÄ k-NN ²ßÂÔÉú³ÉºòÑ¡¶îÍâ±ß£¬±ÜÃâÈ«Á¬±ß±éÀú
+            // ä½¿ç”¨åŸºäºç©ºé—´åˆ†æ¡¶çš„ k-NN ç­–ç•¥ç”Ÿæˆå€™é€‰é¢å¤–è¾¹ï¼Œé¿å…å…¨è¿è¾¹éå†
             var added = new HashSet<long>();
             foreach (var e in mst)
             {
@@ -245,7 +245,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
                 var tmp = candidates[i]; candidates[i] = candidates[j]; candidates[j] = tmp;
             }
 
-            // pick extra edges up to target
+            // pick extra edges upåˆ° target
             int extraTarget = Math.Min(n / 3, 100);
             var extraEdges = new List<Edge>();
             for (int i = 0; i < candidates.Count && extraEdges.Count < extraTarget; ++i)
@@ -254,7 +254,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
                 extraEdges.Add(candidates[i]);
             }
 
-            // ÔÚ MST ±ßÓë¶îÍâ±ßÉÏ¿ªÔä×ßÀÈ
+            // åœ¨ MST è¾¹ä¸é¢å¤–è¾¹ä¸Šå¼€å‡¿èµ°å»Š
             foreach (var e in mst.Concat(extraEdges))
             {
                 CarveCorridor(matrix, pts[e.U], pts[e.V], rogueLikeList.wayId, areaW, areaH);
@@ -264,14 +264,14 @@ namespace ReunionMovementDLL.Dungeon.Shape
         }
 
         /// <summary>
-        /// ¼òµ¥µÄ¾Ü¾ø²ÉÑù£ºÔÚ¸ø¶¨ÇøÓòÄÚ²ÉÑùÈô¸ÉÕûÊı×ø±êµã£¬±£Ö¤±Ë´Ë¾àÀëÖÁÉÙ minSep¡£
-        /// ·µ»ØµÄ×ø±êÎªÏà¶ÔÓÚ»æÖÆ·¶Î§£¨²»º¬ startX/startY Æ«ÒÆ£©µÄÕûÊıµã¡£
+        /// ç®€å•çš„æ‹’ç»é‡‡æ ·ï¼šåœ¨ç»™å®šåŒºåŸŸå†…é‡‡æ ·è‹¥å¹²æ•´æ•°åæ ‡ç‚¹ï¼Œä¿è¯å½¼æ­¤è·ç¦»è‡³å°‘ minSepã€‚
+        /// è¿”å›çš„åæ ‡ä¸ºç›¸å¯¹äºç»˜åˆ¶èŒƒå›´ï¼ˆä¸å« startX/startY åç§»ï¼‰çš„æ•´æ•°ç‚¹ã€‚
         /// </summary>
-        /// <param name="areaW">»æÖÆÇøÓò¿í¶È£¨Ïà¶ÔÖµ£©¡£param>
-        /// <param name="areaH">»æÖÆÇøÓò¸ß¶È£¨Ïà¶ÔÖµ£©¡£param>
-        /// <param name="target">Ä¿±ê²ÉÑùµãÊıÁ¿¡£</param>
-        /// <param name="minSep">²ÉÑùµã¼ä×îĞ¡Å·Ê½¾àÀë£¨ÕûÊı£©¡£</param>
-        /// <returns>²ÉÑùµ½µÄµãÁĞ±í£¨PairInt£©</returns>
+        /// <param name="areaW">ç»˜åˆ¶åŒºåŸŸå®½åº¦ï¼ˆç›¸å¯¹å€¼ï¼‰ã€‚param>
+        /// <param name="areaH">ç»˜åˆ¶åŒºåŸŸé«˜åº¦ï¼ˆç›¸å¯¹å€¼ï¼‰ã€‚param>
+        /// <param name="target">ç›®æ ‡é‡‡æ ·ç‚¹æ•°é‡ã€‚</param>
+        /// <param name="minSep">é‡‡æ ·ç‚¹é—´æœ€å°æ¬§å¼è·ç¦»ï¼ˆæ•´æ•°ï¼‰ã€‚</param>
+        /// <returns>é‡‡æ ·åˆ°çš„ç‚¹åˆ—è¡¨ï¼ˆPairIntï¼‰</returns>
         private List<PairInt> SamplePoints(int areaW, int areaH, int target, int minSep)
         {
             var list = new List<PairInt>();
@@ -280,7 +280,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
             while (list.Count < target && attempts < maxAttempts)
             {
                 attempts++;
-                // ÔÚÄÚ²¿Ïà¶Ô×ø±êÖĞ
+                // åœ¨å†…éƒ¨ç›¸å¯¹åæ ‡ä¸­
                 int x = (int)rand.Next(1, (uint)Math.Max(2, (uint)(areaW - 2)));
                 int y = (int)rand.Next(1, (uint)Math.Max(2, (uint)(areaH - 2)));
                 bool ok = true;
@@ -299,22 +299,22 @@ namespace ReunionMovementDLL.Dungeon.Shape
         }
 
         /// <summary>
-        /// ÔÚ¾ØÕóÉÏ·ÅÖÃ·¿¼ä£¨Óë PlaceOutputNumber ÀàËÆµ«Ê¹ÓÃÏà¶Ô×ø±ê£©£¬²¢ÔÚÖÜ±ß±ê¼ÇÄÚÇ½¡£
-        /// ÈôÄ¿±êÇøÓòÒÑÓĞ·Ç outsideWallId µÄÍßÆ¬Ôò·ÅÖÃÊ§°Ü¡£
+        /// åœ¨çŸ©é˜µä¸Šæ”¾ç½®æˆ¿é—´ï¼ˆä¸ PlaceOutputNumber ç±»ä¼¼ä½†ä½¿ç”¨ç›¸å¯¹åæ ‡ï¼‰ï¼Œå¹¶åœ¨å‘¨è¾¹æ ‡è®°å†…å¢™ã€‚
+        /// è‹¥ç›®æ ‡åŒºåŸŸå·²æœ‰é outsideWallId çš„ç“¦ç‰‡åˆ™æ”¾ç½®å¤±è´¥ã€‚
         /// </summary>
-        /// <param name="matrix">Ä¿±ê¾ØÕó¡£</param>
-        /// <param name="areaW">Ïà¶ÔÃæ»ı¿í¶È¡£</param>
-        /// <param name="areaH">Ïà¶ÔÇøÓò¸ß¶È¡£</param>
-        /// <param name="rect">·¿¼ä¾ØĞÎ£¨Ïà¶Ô×ø±ê£©¡£param>
-        /// <param name="tile">·¿¼äÌî³äÖµ£¨ÀıÈç roomId£©¡£</param>
-        /// <returns>·ÅÖÃÊÇ·ñ³É¹¦¡£</returns>
+        /// <param name="matrix">ç›®æ ‡çŸ©é˜µã€‚</param>
+        /// <param name="areaW">ç›¸å¯¹é¢ç§¯å®½åº¦ã€‚</param>
+        /// <param name="areaH">ç›¸å¯¹åŒºåŸŸé«˜åº¦ã€‚</param>
+        /// <param name="rect">æˆ¿é—´çŸ©å½¢ï¼ˆç›¸å¯¹åæ ‡ï¼‰ã€‚param>
+        /// <param name="tile">æˆ¿é—´å¡«å……å€¼ï¼ˆä¾‹å¦‚ roomIdï¼‰ã€‚</param>
+        /// <returns>æ”¾ç½®æ˜¯å¦æˆåŠŸã€‚</returns>
         private bool PlaceRoom(int[,] matrix, int areaW, int areaH, RogueLikeOutputNumber rect, int tile)
         {
             if (rect.x < 1 || rect.y < 1 || rect.x + rect.w > areaW - 1 || rect.y + rect.h > areaH - 1)
             {
                 return false;
             }
-            // ¼ì²éÇøÓòÊÇ·ñÎª¿Õ
+            // æ£€æŸ¥åŒºåŸŸæ˜¯å¦ä¸ºç©º
             for (int y = rect.y; y < rect.y + rect.h; ++y)
             {
                 for (int x = rect.x; x < rect.x + rect.w; ++x)
@@ -323,7 +323,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
                         return false;
                 }
             }
-            // ·ÅÖÃ·¿¼ä²¢±ê¼ÇÄÚÇ½
+            // æ”¾ç½®æˆ¿é—´å¹¶æ ‡è®°å†…å¢™
             for (int y = rect.y - 1; y < rect.y + rect.h + 1; ++y)
             {
                 for (int x = rect.x - 1; x < rect.x + rect.w + 1; ++x)
@@ -343,44 +343,44 @@ namespace ReunionMovementDLL.Dungeon.Shape
         }
 
         /// <summary>
-        /// ÔÚÁ½¸öµãÖ®¼ä¿ªÔä L ĞÍ×ßÀÈ£¨ÏÈºáºó×İ»òÏÈ×İºóºá£©£¬²¢ÔÚ×ßÀÈÖÜ±ß±ê¼ÇÄÚÇ½¡£
-        /// ×ø±êÎªÏà¶ÔÓÚ»æÖÆÇøÓò£¨Î´¼Ó startX/startY Æ«ÒÆ£©¡£
+        /// åœ¨ä¸¤ä¸ªç‚¹ä¹‹é—´å¼€å‡¿ L å‹èµ°å»Šï¼ˆå…ˆæ¨ªåçºµæˆ–å…ˆçºµåæ¨ªï¼‰ï¼Œå¹¶åœ¨èµ°å»Šå‘¨è¾¹æ ‡è®°å†…å¢™ã€‚
+        /// åæ ‡ä¸ºç›¸å¯¹äºç»˜åˆ¶åŒºåŸŸï¼ˆæœªåŠ  startX/startY åç§»ï¼‰ã€‚
         /// </summary>
-        /// <param name="matrix">Ä¿±ê¾ØÕó¡£</param>
-        /// <param name="a">Æğµã£¨Ïà¶Ô×ø±ê£©¡£param>
-        /// <param name="b">ÖÕµã£¨Ïà¶Ô×ø±ê£©¡£param>
-        /// <param name="wayTile">×ßÀÈÌî³äÖµ£¨wayId£©¡£param>
-        /// <param name="areaW">Ïà¶ÔÇøÓò¿í¶È¡£</param>
-        /// <param name="areaH">Ïà¶ÔÇøÓò¸ß¶È¡£</param>
+        /// <param name="matrix">ç›®æ ‡çŸ©é˜µã€‚</param>
+        /// <param name="a">èµ·ç‚¹ï¼ˆç›¸å¯¹åæ ‡ï¼‰ã€‚param>
+        /// <param name="b">ç»ˆç‚¹ï¼ˆç›¸å¯¹åæ ‡ï¼‰ã€‚param>
+        /// <param name="wayTile">èµ°å»Šå¡«å……å€¼ï¼ˆwayIdï¼‰ã€‚param>
+        /// <param name="areaW">ç›¸å¯¹åŒºåŸŸå®½åº¦ã€‚</param>
+        /// <param name="areaH">ç›¸å¯¹åŒºåŸŸé«˜åº¦ã€‚</param>
         private void CarveCorridor(int[,] matrix, PairInt a, PairInt b, int wayTile, int areaW, int areaH)
         {
             int x1 = a.X, y1 = a.Y, x2 = b.X, y2 = b.Y;
-            // Ëæ»úÑ¡ÔñÏÈºáºó×İ»òÏÈ×İºóºá
+            // éšæœºé€‰æ‹©å…ˆæ¨ªåçºµæˆ–å…ˆçºµåæ¨ª
             if (rand.Probability(0.5))
             {
-                // ÏÈºáºó×İ
+                // å…ˆæ¨ªåçºµ
                 CarveStraight(matrix, x1, y1, x2, y1, wayTile, areaW, areaH);
                 CarveStraight(matrix, x2, y1, x2, y2, wayTile, areaW, areaH);
             }
             else
             {
-                // ÏÈ×İºóºá
+                // å…ˆçºµåæ¨ª
                 CarveStraight(matrix, x1, y1, x1, y2, wayTile, areaW, areaH);
                 CarveStraight(matrix, x1, y2, x2, y2, wayTile, areaW, areaH);
             }
         }
 
         /// <summary>
-        /// ÔÚ¾ØĞÎÖ±Ïß¶ÎÉÏ¿ªÔäÖ±×ßÀÈ£¨Ë®Æ½»ò´¹Ö±£©£¬²¢°ÑÖÜ±ßÉĞÎª outside µÄ¸ñ×Ó±ê¼ÇÎª insideWallId¡£
+        /// åœ¨çŸ©å½¢ç›´çº¿æ®µä¸Šå¼€å‡¿ç›´èµ°å»Šï¼ˆæ°´å¹³æˆ–å‚ç›´ï¼‰ï¼Œå¹¶æŠŠå‘¨è¾¹å°šä¸º outside çš„æ ¼å­æ ‡è®°ä¸º insideWallIdã€‚
         /// </summary>
-        /// <param name="matrix">Ä¿±ê¾ØÕó¡£</param>
-        /// <param name="x1">Æğµã X£¨Ïà¶Ô×ø±ê£©¡£</param>
-        /// <param name="y1">Æğµã Y£¨Ïà¶Ô×ø±ê£©¡£</param>
-        /// <param name="x2">ÖÕµã X£¨Ïà¶Ô×ø±ê£©¡£</param>
-        /// <param name="y2">ÖÕµã Y£¨Ïà¶Ô×ø±ê£©¡£</param>
-        /// <param name="wayTile">×ßÀÈÌî³äÖµ¡£</param>
-        /// <param name="areaW">Ïà¶ÔÇøÓò¿í¶È¡£</param>
-        /// <param name="areaH">Ïà¶ÔÇøÓò¸ß¶È¡£</param>
+        /// <param name="matrix">ç›®æ ‡çŸ©é˜µã€‚</param>
+        /// <param name="x1">èµ·ç‚¹ Xï¼ˆç›¸å¯¹åæ ‡ï¼‰ã€‚</param>
+        /// <param name="y1">èµ·ç‚¹ Yï¼ˆç›¸å¯¹åæ ‡ï¼‰ã€‚</param>
+        /// <param name="x2">ç»ˆç‚¹ Xï¼ˆç›¸å¯¹åæ ‡ï¼‰ã€‚</param>
+        /// <param name="y2">ç»ˆç‚¹ Yï¼ˆç›¸å¯¹åæ ‡ï¼‰ã€‚</param>
+        /// <param name="wayTile">èµ°å»Šå¡«å……å€¼ã€‚</param>
+        /// <param name="areaW">ç›¸å¯¹åŒºåŸŸå®½åº¦ã€‚</param>
+        /// <param name="areaH">ç›¸å¯¹åŒºåŸŸé«˜åº¦ã€‚</param>
         private void CarveStraight(int[,] matrix, int x1, int y1, int x2, int y2, int wayTile, int areaW, int areaH)
         {
             int sx = Math.Min(x1, x2);
@@ -388,23 +388,28 @@ namespace ReunionMovementDLL.Dungeon.Shape
             int sy = Math.Min(y1, y2);
             int ey = Math.Max(y1, y2);
 
-            // ¿ªÔä×ßÀÈ
+            // å¼€å‡¿èµ°å»Š
             for (int y = sy; y <= ey; ++y)
             {
                 for (int x = sx; x <= ex; ++x)
                 {
                     if (x < 0 || y < 0 || x >= areaW || y >= areaH) continue;
-                    matrix[startY + y, startX + x] = wayTile;
+
+                    // ä»…å½“ç›®æ ‡æ ¼ä¸æ˜¯æˆ¿é—´åœ°é¢æ—¶æ‰å¼€å‡¿èµ°å»Šï¼Œé¿å…è¦†ç›–æˆ¿é—´
+                    if (matrix[startY + y, startX + x] != rogueLikeList.roomId)
+                    {
+                        matrix[startY + y, startX + x] = wayTile;
+                    }
                 }
             }
 
-            // ±ê¼ÇÄÚÇ½
+            // æ ‡è®°å†…å¢™
             for (int y = sy - 1; y <= ey + 1; ++y)
             {
                 for (int x = sx - 1; x <= ex + 1; ++x)
                 {
                     if (x < 0 || y < 0 || x >= areaW || y >= areaH) continue;
-                    // ½ö±ê¼ÇÉĞÎª outsideWallId µÄ¸ñ×Ó
+                    // ä»…æ ‡è®°å°šä¸º outsideWallId çš„æ ¼å­
                     if (matrix[startY + y, startX + x] == rogueLikeList.outsideWallId)
                     {
                         matrix[startY + y, startX + x] = rogueLikeList.insideWallId;
@@ -414,22 +419,22 @@ namespace ReunionMovementDLL.Dungeon.Shape
         }
 
         /// <summary>
-        /// ¼òµ¥µÄÕûÊı×ø±ê¶Ô½á¹¹£¬´ú±íÏà¶ÔÓÚ»æÖÆÇøÓòµÄµã¡£
+        /// ç®€å•çš„æ•´æ•°åæ ‡å¯¹ç»“æ„ï¼Œä»£è¡¨ç›¸å¯¹äºç»˜åˆ¶åŒºåŸŸçš„ç‚¹ã€‚
         /// </summary>
         private struct PairInt { public int X; public int Y; public PairInt(int x, int y) { X = x; Y = y; } }
 
         /// <summary>
-        /// ±ß½á¹¹£ºÓÃÓÚ´æ´¢Á½¸ö¶¥µãË÷ÒıÓëÈ¨ÖØ£¨´Ë´¦Îª¾àÀëÆ½·½£©¡£
+        /// è¾¹ç»“æ„ï¼šç”¨äºå­˜å‚¨ä¸¤ä¸ªé¡¶ç‚¹ç´¢å¼•ä¸æƒé‡ï¼ˆæ­¤å¤„ä¸ºè·ç¦»å¹³æ–¹ï¼‰ã€‚
         /// </summary>
         private class Edge { public int U; public int V; public int Weight; public Edge(int u, int v, int w) { U = u; V = v; Weight = w; } }
 
         /// <summary>
-        /// ×îĞ¡¶Ñ½Úµã¡£
+        /// æœ€å°å †èŠ‚ç‚¹ã€‚
         /// </summary>
         private struct HeapNode { public int Key; public int Vertex; public int Parent; public HeapNode(int k, int v, int p) { Key = k; Vertex = v; Parent = p; } }
 
         /// <summary>
-        /// ¼òµ¥¶ş²æ¶ÑÊµÏÖµÄ×îĞ¡¶Ñ£¨ÓÃÓÚ Prim£©¡£
+        /// ç®€å•äºŒå‰å †å®ç°çš„æœ€å°å †ï¼ˆç”¨äº Primï¼‰ã€‚
         /// </summary>
         private class MinHeap
         {
@@ -466,38 +471,6 @@ namespace ReunionMovementDLL.Dungeon.Shape
                     i = smallest;
                 }
                 return ret;
-            }
-        }
-
-        /// <summary>
-        /// ²¢²é¼¯ÊµÏÖ£¨ÓÃÓÚ Kruskal MST£©£¬Ö§³Ö Find Óë Union ²Ù×÷¡£
-        /// </summary>
-        private class UnionFind
-        {
-            private int[] p;
-
-            /// <summary>
-            /// ¹¹Ôì²¢²é¼¯²¢³õÊ¼»¯´óĞ¡Îª n¡£
-            /// </summary>
-            public UnionFind(int n) { p = new int[n]; for (int i = 0; i < n; ++i) p[i] = -1; }
-
-            /// <summary>
-            /// ²éÕÒÔªËØËùÔÚ¼¯ºÏµÄ¸ùË÷Òı£¨º¬Â·¾¶Ñ¹Ëõ£©¡£
-            /// </summary>
-            /// <param name="x">ÔªËØË÷Òı¡£</param>
-            /// <returns>¸ùË÷Òı¡£</returns>
-            public int Find(int x) { return p[x] < 0 ? x : (p[x] = Find(p[x])); }
-
-            /// <summary>
-            /// ºÏ²¢Á½¸ö¼¯ºÏ£¬ÈôÔ­ÒÑÍ¬ÊôÒ»¼¯ºÏ·µ»Ø false£¬·ñÔòºÏ²¢²¢·µ»Ø true¡£
-            /// </summary>
-            /// <param name="a">ÔªËØ a¡£</param>
-            /// <param name="b">ÔªËØ b¡£</param>
-            /// <returns>ÊÇ·ñÍê³ÉºÏ²¢¡£</returns>
-            public bool Union(int a, int b)
-            {
-                a = Find(a); b = Find(b); if (a == b) return false; if (p[a] > p[b]) { var t = a; a = b; b = t; }
-                p[a] += p[b]; p[b] = a; return true;
             }
         }
     }

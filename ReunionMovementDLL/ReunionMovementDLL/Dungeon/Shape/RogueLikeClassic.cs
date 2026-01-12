@@ -536,32 +536,32 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <summary>
         /// 使用各类瓦片 ID 初始化的构造函数。
         /// </summary>
-        public RogueLikeClassic(int outsideWallId, int insideWallId, int roomId, int entranceId, int exitId, int wayId) : base(
-            outsideWallId, insideWallId, roomId, entranceId, exitId, wayId)
+        public RogueLikeClassic(int outsideWallId, int insideWallId, int roomId, int entranceId, int wayId) : base(
+            outsideWallId, insideWallId, roomId, entranceId, wayId)
         {
         }
 
         /// <summary>
         /// 使用各类瓦片 ID 并指定最大通路数的构造函数。
         /// </summary>
-        public RogueLikeClassic(int outsideWallId, int insideWallId, int roomId, int entranceId, int exitId, int wayId, uint maxWay) :
-            base(outsideWallId, insideWallId, roomId, entranceId, exitId, wayId, maxWay)
+        public RogueLikeClassic(int outsideWallId, int insideWallId, int roomId, int entranceId, int wayId, uint maxWay) :
+            base(outsideWallId, insideWallId, roomId, entranceId, wayId, maxWay)
         {
         }
 
         /// <summary>
         /// 使用瓦片 ID、最大通路与房间范围初始化的构造函数。
         /// </summary>
-        public RogueLikeClassic(int outsideWallId, int insideWallId, int roomId, int entranceId, int exitId, int wayId, uint maxWay,
-            MatrixRange roomRange) : base(outsideWallId, insideWallId, roomId, entranceId, exitId, wayId, maxWay, roomRange)
+        public RogueLikeClassic(int outsideWallId, int insideWallId, int roomId, int entranceId, int wayId, uint maxWay,
+            MatrixRange roomRange) : base(outsideWallId, insideWallId, roomId, entranceId, wayId, maxWay, roomRange)
         {
         }
 
         /// <summary>
         /// 使用瓦片 ID、最大通路、房间范围与通路范围初始化的构造函数。
         /// </summary>
-        public RogueLikeClassic(int outsideWallId, int insideWallId, int roomId, int entranceId, int exitId, int wayId, uint maxWay,
-            MatrixRange roomRange, MatrixRange wayRange) : base(outsideWallId, insideWallId, roomId, entranceId, exitId, wayId,
+        public RogueLikeClassic(int outsideWallId, int insideWallId, int roomId, int entranceId, int wayId, uint maxWay,
+            MatrixRange roomRange, MatrixRange wayRange) : base(outsideWallId, insideWallId, roomId, entranceId, wayId,
             maxWay, roomRange, wayRange)
         {
         }

@@ -1,5 +1,6 @@
 ﻿using ReunionMovementDLL.Dungeon.Random;
 using ReunionMovementDLL.Dungeon.Range;
+using ReunionMovementDLL.Dungeon.Base;
 using System;
 using MatrixRange = ReunionMovementDLL.Dungeon.Base.Coordinate2DMatrix;
 
@@ -12,6 +13,11 @@ namespace ReunionMovementDLL.Dungeon.Shape
     /// </summary>
     public class RogueLikeBSP : RectBaseSimpleRogueLike<RogueLikeBSP>, IDrawer<int>
     {
+        /// <summary>
+        /// 存放 RogueLike 标识的结构（外墙/内墙/房间/入口/道路 等）。
+        /// </summary>
+        private RogueLikeList rogueLikeList = new RogueLikeList();
+
         /// <summary>
         /// 随机数生成器，用于生成分割、房间和道路的随机数。
         /// </summary>
@@ -26,6 +32,19 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// 表示按Y方向分割的常量标识。
         /// </summary>
         private const int RL_COUNT_Y = 1;
+
+        /// <summary>
+        /// 设置绘制所用的 RogueLikeList 并同步 Room/Way 值。
+        /// </summary>
+        /// <param name="list">RogueLikeList 对象。</param>
+        /// <returns>当前实例。</returns>
+        public RogueLikeBSP SetValue(RogueLikeList list)
+        {
+            this.rogueLikeList = list;
+            this.roomValue = list.roomId;
+            this.roadValue = list.wayId;
+            return this;
+        }
 
         // Normal
         /// <summary>
@@ -142,7 +161,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
                 dungeonRoom[i, 2] = dungeonDivision[i, 2];
                 dungeonRoom[i, 3] = dungeonDivision[i, 3];
 
-                dungeonRoom[i, 0] = dungeonDivision[i, 2] + roomMinY + rand.Next(roomRandMaxX);
+                dungeonRoom[i, 0] = dungeonDivision[i, 2] + roomMinY + (roomRandMaxX > 0 ? rand.Next(roomRandMaxX) : 0);
 
                 if (dungeonDivision[i, 0] - dungeonDivision[i, 2] < dungeonRoom[i, 0] - dungeonRoom[i, 2] + 5)
                 {
@@ -153,7 +172,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
                     }
                 }
 
-                dungeonRoom[i, 1] = dungeonDivision[i, 3] + roomMinX + rand.Next(roomRandMaxY);
+                dungeonRoom[i, 1] = dungeonDivision[i, 3] + roomMinX + (roomRandMaxY > 0 ? rand.Next(roomRandMaxY) : 0);
 
                 if (dungeonDivision[i, 1] - dungeonDivision[i, 3] < dungeonRoom[i, 1] - dungeonRoom[i, 3] + 5)
                 {
@@ -171,8 +190,10 @@ namespace ReunionMovementDLL.Dungeon.Shape
                 }
 
 
-                uint l = dungeonDivision[i, 0] - dungeonRoom[i, 0] - 5 == 0 ? 2 : rand.Next(1, (dungeonDivision[i, 0] - dungeonRoom[i, 0]) - 5) + 2;
-                uint n = dungeonDivision[i, 1] - dungeonRoom[i, 1] - 5 == 0 ? 2 : rand.Next(1, (dungeonDivision[i, 1] - dungeonRoom[i, 1]) - 5) + 2;
+                uint diffY = dungeonDivision[i, 0] - dungeonRoom[i, 0];
+                uint l = diffY <= 5 ? 2 : rand.Next(1, diffY - 5) + 2;
+                uint diffX = dungeonDivision[i, 1] - dungeonRoom[i, 1];
+                uint n = diffX <= 5 ? 2 : rand.Next(1, diffX - 5) + 2;
 
                 dungeonRoom[i, 0] += l;
                 dungeonRoom[i, 2] += l;
@@ -191,14 +212,21 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <param name="mapDivCount">划分数量。</param>
         private void CreateRoad(uint[,] dungeonRoad, uint[,] dungeonRoom, uint[,] dungeonDivision, int[,] matrix_, uint mapDivCount)
         {
+            bool useDoor = rogueLikeList.entranceId >= 0;
+
             for (uint roomBefore = 0, roomAfter = 0; roomBefore < mapDivCount; ++roomBefore)
             {
                 roomAfter = dungeonRoad[roomBefore, 0];
                 switch (dungeonRoad[roomBefore, 1])
                 {
                     case RL_COUNT_X:
-                        dungeonRoad[roomBefore, 2] = rand.Next(dungeonRoom[roomBefore, 1] - dungeonRoom[roomBefore, 3] - 1);
-                        dungeonRoad[roomBefore, 3] = rand.Next(dungeonRoom[roomAfter, 1] - dungeonRoom[roomAfter, 3] - 1);
+                        {
+                            uint wBefore = dungeonRoom[roomBefore, 1] - dungeonRoom[roomBefore, 3];
+                            dungeonRoad[roomBefore, 2] = wBefore > 1 ? rand.Next(wBefore - 1) : 0;
+
+                            uint wAfter = dungeonRoom[roomAfter, 1] - dungeonRoom[roomAfter, 3];
+                            dungeonRoad[roomBefore, 3] = wAfter > 1 ? rand.Next(wAfter - 1) : 0;
+                        }
 
                         for (uint j = dungeonRoom[roomBefore, 0]; j < dungeonDivision[roomBefore, 0]; ++j)
                             matrix_[j, dungeonRoad[roomBefore, 2] + dungeonRoom[roomBefore, 3]] = roadValue;
@@ -211,10 +239,24 @@ namespace ReunionMovementDLL.Dungeon.Shape
                             matrix_[dungeonDivision[roomBefore, 0], j] = roadValue;
                         for (uint j = dungeonRoad[roomBefore, 3] + dungeonRoom[roomAfter, 3]; j <= dungeonRoad[roomBefore, 2] + dungeonRoom[roomBefore, 3]; ++j)
                             matrix_[dungeonDivision[roomBefore, 0], j] = roadValue;
+
+                        if (useDoor)
+                        {
+                            // Before Room Bottom Door
+                            if (dungeonRoom[roomBefore, 0] > 0)
+                                matrix_[dungeonRoom[roomBefore, 0] - 1, dungeonRoad[roomBefore, 2] + dungeonRoom[roomBefore, 3]] = rogueLikeList.entranceId;
+                            // After Room Top Door
+                            matrix_[dungeonRoom[roomAfter, 2], dungeonRoad[roomBefore, 3] + dungeonRoom[roomAfter, 3]] = rogueLikeList.entranceId;
+                        }
                         break;
                     case RL_COUNT_Y:
-                        dungeonRoad[roomBefore, 2] = rand.Next(dungeonRoom[roomBefore, 0] - dungeonRoom[roomBefore, 2] - 1);
-                        dungeonRoad[roomBefore, 3] = rand.Next(dungeonRoom[roomAfter, 0] - dungeonRoom[roomAfter, 2] - 1);
+                        {
+                            uint hBefore = dungeonRoom[roomBefore, 0] - dungeonRoom[roomBefore, 2];
+                            dungeonRoad[roomBefore, 2] = hBefore > 1 ? rand.Next(hBefore - 1) : 0;
+
+                            uint hAfter = dungeonRoom[roomAfter, 0] - dungeonRoom[roomAfter, 2];
+                            dungeonRoad[roomBefore, 3] = hAfter > 1 ? rand.Next(hAfter - 1) : 0;
+                        }
 
                         for (uint j = dungeonRoom[roomBefore, 1]; j < dungeonDivision[roomBefore, 1]; ++j)
                             matrix_[dungeonRoad[roomBefore, 2] + dungeonRoom[roomBefore, 2], j] = roadValue;
@@ -226,6 +268,15 @@ namespace ReunionMovementDLL.Dungeon.Shape
                             matrix_[j, dungeonDivision[roomBefore, 1]] = roadValue;
                         for (uint j = dungeonRoad[roomBefore, 3] + dungeonRoom[roomAfter, 2]; j <= dungeonRoad[roomBefore, 2] + dungeonRoom[roomBefore, 2]; ++j)
                             matrix_[j, dungeonDivision[roomBefore, 1]] = roadValue;
+
+                        if (useDoor)
+                        {
+                            // Before Room Right Door
+                            if (dungeonRoom[roomBefore, 1] > 0)
+                                matrix_[dungeonRoad[roomBefore, 2] + dungeonRoom[roomBefore, 2], dungeonRoom[roomBefore, 1] - 1] = rogueLikeList.entranceId;
+                            // After Room Left Door
+                            matrix_[dungeonRoad[roomBefore, 3] + dungeonRoom[roomAfter, 2], dungeonRoom[roomAfter, 3]] = rogueLikeList.entranceId;
+                        }
                         break;
 
                 }
@@ -240,10 +291,23 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <param name="mapDivCount">划分/房间数量。</param>
         private void AssignRoom(uint[,] dungeonRoom, int[,] matrix_, uint mapDivCount)
         {
+            int wallId = rogueLikeList.insideWallId;
+            bool useWall = wallId >= 0;
+
             for (uint i = 0; i < mapDivCount; ++i)
                 for (uint j = dungeonRoom[i, 2]; j < dungeonRoom[i, 0]; ++j)
                     for (uint k = dungeonRoom[i, 3]; k < dungeonRoom[i, 1]; ++k)
-                        matrix_[j, k] = roomValue;
+                    {
+                        if (useWall && (j == dungeonRoom[i, 2] || j == dungeonRoom[i, 0] - 1 ||
+                                        k == dungeonRoom[i, 3] || k == dungeonRoom[i, 1] - 1))
+                        {
+                            matrix_[j, k] = wallId;
+                        }
+                        else
+                        {
+                            matrix_[j, k] = roomValue;
+                        }
+                    }
         }
 
         /// <summary>
@@ -344,9 +408,9 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <param name="divisionMin">最小划分数量。</param>
         /// <param name="divisionRandMax">划分随机上限。</param>
         /// <param name="roomMinX">房间最小X尺寸。</param>
-        /// <param name="roomRandMaxX">房间X方向随机上限。</param>
+        /// <param name="roomRandMaxX">房间X方向随机尺寸上限。</param>
         /// <param name="roomMinY">房间最小Y尺寸。</param>
-        /// <param name="roomRandMaxY">房间Y方向随机上限。</param>
+        /// <param name="roomRandMaxY">房间Y方向随机尺寸上限。</param>
         public RogueLikeBSP(MatrixRange matrixRange, int roomValue, int roadValue, uint divisionMin,
             uint divisionRandMax, uint roomMinX, uint roomRandMaxX, uint roomMinY, uint roomRandMaxY)
             : base(matrixRange, roomValue, roadValue, divisionMin, divisionRandMax, roomMinX, roomRandMaxX, roomMinY, roomRandMaxY) { }
