@@ -12,6 +12,6 @@
         /// 参数为行=height、列=width 的矩阵。
         /// </summary>
         /// <param name="matrix">要填充的高度矩阵，被调用者修改。</param>
-        void DrawNormalize(float[,] matrix);
+        bool DrawNormalize(float[,] matrix);
     }
 }

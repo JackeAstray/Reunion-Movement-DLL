@@ -33,9 +33,6 @@ namespace ReunionMovementDLL.Dungeon.Retouch
             throw new NotImplementedException();
         }
 
-        /**
-         * Do CellAutomaton
-         */
         /// <summary>
         /// 将位于指定列、行的单元根据其四个邻居的值进行赋值。
         /// 规则：若四个邻居都相同，则采用该相同值；否则随机选择四个邻居之一的值。
@@ -116,7 +113,7 @@ namespace ReunionMovementDLL.Dungeon.Retouch
         /// </summary>
         public CellularAutomaton()
         {
-        } // = default()
+        }
 
         /// <summary>
         /// 使用指定的矩阵范围构造实例。

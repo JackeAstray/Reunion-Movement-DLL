@@ -6,10 +6,17 @@ using MatrixRange = ReunionMovementDLL.Dungeon.Base.Coordinate2DMatrix;
 
 namespace ReunionMovementDLL.Dungeon.Shape
 {
+    /// <summary>
+    /// 基于聚类（合并集）算法生成迷宫的绘制器。
+    /// 使用并查集（Union-Find）在网格上创建通道，最终生成连通的迷宫结构。
+    /// </summary>
     public class ClusteringMaze : RectBaseWithValue<ClusteringMaze>, IDrawer<int>
     {
         private RandomBase rand = new RandomBase();
 
+        /// <summary>
+        /// 四个方向的枚举值，表示上、右、下、左。
+        /// </summary>
         private enum Direction
         {
             UP_DIR = 0,
@@ -18,6 +25,12 @@ namespace ReunionMovementDLL.Dungeon.Shape
             LEFT_DIR
         }
 
+        /// <summary>
+        /// 根据方向返回x方向的增量（列变化）。
+        /// 例如：向右返回1，向左返回-1，上/下返回0。
+        /// </summary>
+        /// <param name="dir">方向枚举。</param>
+        /// <returns>x方向的位移（-1、0或1）。</returns>
         int dirDx(Direction dir)
         {
             switch (dir)
@@ -29,6 +42,13 @@ namespace ReunionMovementDLL.Dungeon.Shape
             }
             return 0;
         }
+
+        /// <summary>
+        /// 根据方向返回y方向的增量（行变化）。
+        /// 例如：向下返回1，向上返回-1，左/右返回0。
+        /// </summary>
+        /// <param name="dir">方向枚举。</param>
+        /// <returns>y方向的位移（-1、0或1）。</returns>
         int dirDy(Direction dir)
         {
             switch (dir)
@@ -41,16 +61,36 @@ namespace ReunionMovementDLL.Dungeon.Shape
             return 0;
         }
 
+        /// <summary>
+        /// 并查集的查找（带路径压缩）：返回元素x的根节点索引。
+        /// </summary>
+        /// <param name="data">并查集的父指针数组。</param>
+        /// <param name="x">要查找的元素索引。</param>
+        /// <returns>元素x的根索引。</returns>
         private uint root(uint[] data, uint x)
         {
             return data[x] == x ? x : data[x] = this.root(data, data[x]);
         }
 
+        /// <summary>
+        /// 判断两个元素是否属于同一个集合（根是否相同）。
+        /// </summary>
+        /// <param name="data">并查集的父指针数组。</param>
+        /// <param name="x">第一个元素索引。</param>
+        /// <param name="y">第二个元素索引。</param>
+        /// <returns>如果两者属于同一集合则返回true。</returns>
         private bool same(uint[] data, uint x, uint y)
         {
             return this.root(data, x) == this.root(data, y);
         }
 
+        /// <summary>
+        /// 将两个集合合并（按秩合并策略）。
+        /// </summary>
+        /// <param name="data">并查集的父指针数组。</param>
+        /// <param name="rank">用于按秩合并的秩数组。</param>
+        /// <param name="x">第一个元素索引。</param>
+        /// <param name="y">第二个元素索引。</param>
         private void unite(uint[] data, uint[] rank, uint x, uint y)
         {
             x = this.root(data, x);
@@ -64,6 +104,20 @@ namespace ReunionMovementDLL.Dungeon.Shape
             }
         }
 
+        /// <summary>
+        /// 为指定单元(x,y)查找一个不同集合的邻居并与之合并（如果存在）。
+        /// 如果找到不同集合的邻居，会将对应的outX/outY/outDir设置为邻居位置和方向。
+        /// </summary>
+        /// <param name="data">并查集的父指针数组。</param>
+        /// <param name="rank">用于按秩合并的秩数组。</param>
+        /// <param name="mWidth">缩小格子宽度（单元格数）。</param>
+        /// <param name="mHeight">缩小格子高度（单元格数）。</param>
+        /// <param name="mSize">总单元格数（mWidth * mHeight）。</param>
+        /// <param name="x">单元格的x索引（在mWidth范围内）。</param>
+        /// <param name="y">单元格的y索引（在mHeight范围内）。</param>
+        /// <param name="outX">输出参数：找到的邻居x。</param>
+        /// <param name="outY">输出参数：找到的邻居y。</param>
+        /// <param name="outDir">输出参数：从原单元到邻居的方向。</param>
         private void uniteDifNeighbor(uint[] data, uint[] rank, uint mWidth, uint mHeight, uint mSize, uint x, uint y,
             ref uint outX, ref uint outY, ref Direction outDir)
         {
@@ -76,6 +130,20 @@ namespace ReunionMovementDLL.Dungeon.Shape
             outDir = oDir;
         }
 
+        /// <summary>
+        /// 查找与单元(x,y)不属于同一集合的邻居（随机顺序检查同一集合内的单元和方向）。
+        /// 如果找到，返回0并通过out参数设置邻居位置和方向；如果未找到，返回-1。
+        /// </summary>
+        /// <param name="data">并查集的父指针数组。</param>
+        /// <param name="mWidth">缩小格子宽度（单元格数）。</param>
+        /// <param name="mHeight">缩小格子高度（单元格数）。</param>
+        /// <param name="mSize">总单元格数（mWidth * mHeight）。</param>
+        /// <param name="x">单元格的x索引（在mWidth范围内）。</param>
+        /// <param name="y">单元格的y索引（在mHeight范围内）。</param>
+        /// <param name="outX">输出参数：找到的邻居x。</param>
+        /// <param name="outY">输出参数：找到的邻居y。</param>
+        /// <param name="outDir">输出参数：从原单元到邻居的方向。</param>
+        /// <returns>找到返回0，未找到返回-1。</returns>
         int findDifNeighbor(uint[] data, uint mWidth, uint mHeight, uint mSize, uint x, uint y,
             ref uint outX, ref uint outY, ref Direction outDir)
         {
@@ -122,6 +190,12 @@ namespace ReunionMovementDLL.Dungeon.Shape
             return -1;
         }
 
+        /// <summary>
+        /// 检查并查集中是否所有元素都属于同一集合（即迷宫是否已完全连通）。
+        /// </summary>
+        /// <param name="data">并查集的父指针数组。</param>
+        /// <param name="dSize">并查集大小（元素数）。</param>
+        /// <returns>如果所有元素都与索引0相同（连通）则返回true。</returns>
         private bool isAllSame(uint[] data, uint dSize)
         {
             for (uint i = 1; i < dSize; ++i)
@@ -130,16 +204,34 @@ namespace ReunionMovementDLL.Dungeon.Shape
             return true;
         }
 
+        /// <summary>
+        /// 在给定矩阵区域内生成聚类迷宫：先在网格上设置初始的墙体点，然后使用并查集随机合并并破墙形成通路。
+        /// 返回true表示绘制成功。
+        /// </summary>
+        /// <param name="matrix">要绘制的二维整数矩阵。</param>
+        /// <returns>表示绘制是否成功的布尔值。</returns>
         public bool Draw(int[,] matrix)
         {
             return DrawNormal(matrix);
         }
 
+        /// <summary>
+        /// 带日志输出的Draw重载（当前未实现）。
+        /// </summary>
+        /// <param name="matrix">要绘制的矩阵。</param>
+        /// <param name="log">输出日志字符串（未实现）。</param>
+        /// <returns>抛出System.NotImplementedException。</returns>
         public bool Draw(int[,] matrix, out string log)
         {
             throw new System.NotImplementedException();
         }
 
+        /// <summary>
+        /// 实际绘制逻辑实现：根据给定的矩形范围计算可用区域，创建缩小网格并应用并查集来破墙生成迷宫。
+        /// 该实现会在缩小网格的每个单元中心设置墙体，然后随机选择不同集合的邻居并破墙直至所有单元连通。
+        /// </summary>
+        /// <param name="matrix">要绘制的二维整数矩阵。</param>
+        /// <returns>表示绘制是否成功的布尔值。</returns>
         private bool DrawNormal(int[,] matrix)
         {
             var width = this.CalcEndX(MatrixUtil.GetX(matrix) - this.startX);
@@ -184,19 +276,39 @@ namespace ReunionMovementDLL.Dungeon.Shape
             return true;
         }
 
+        /// <summary>
+        /// 默认构造函数，创建一个ClusteringMaze实例。
+        /// </summary>
         public ClusteringMaze()
         {
         } // = default();
 
+        /// <summary>
+        /// 使用绘制值和矩阵范围构造ClusteringMaze实例。
+        /// </summary>
+        /// <param name="drawValue">用于绘制墙/通路的值。</param>
+        /// <param name="matrixRange">指定矩阵范围的MatrixRange对象。</param>
         public ClusteringMaze(int drawValue, MatrixRange matrixRange) : base(drawValue, matrixRange)
         {
         }
 
+        /// <summary>
+        /// 使用绘制值和矩形参数构造ClusteringMaze实例。
+        /// </summary>
+        /// <param name="drawValue">用于绘制墙/通路的值。</param>
+        /// <param name="startX">起始X（列）索引。</param>
+        /// <param name="startY">起始Y（行）索引。</param>
+        /// <param name="width">矩形宽度（列数）。</param>
+        /// <param name="height">矩形高度（行数）。</param>
         public ClusteringMaze(int drawValue, uint startX, uint startY, uint width, uint height) : base(drawValue,
             startX, startY, width, height)
         {
         }
 
+        /// <summary>
+        /// 使用绘制值构造ClusteringMaze实例，范围使用默认或另行设置。
+        /// </summary>
+        /// <param name="drawValue">用于绘制墙/通路的值。</param>
         public ClusteringMaze(int drawValue) : base(drawValue)
         {
         }
