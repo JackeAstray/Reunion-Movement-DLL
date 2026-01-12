@@ -7,9 +7,10 @@ using MatrixRange = ReunionMovementDLL.Dungeon.Base.Coordinate2DMatrix;
 namespace ReunionMovementDLL.Dungeon.Shape
 {
     /// <summary>
-    /// 简单的RogueLike地图生成器：基于二叉空间划分的房间与道路生成器，实现IDrawer<int>接口。
+    /// 简单的RogueLike地图生成器（基于二叉空间划分，BSP）。
+    /// 名称已改为 RogueLikeBSP。
     /// </summary>
-    public class SimpleRogueLike : RectBaseSimpleRogueLike<SimpleRogueLike>, IDrawer<int>
+    public class RogueLikeBSP : RectBaseSimpleRogueLike<RogueLikeBSP>, IDrawer<int>
     {
         /// <summary>
         /// 随机数生成器，用于生成分割、房间和道路的随机数。
@@ -284,20 +285,20 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <summary>
         /// 默认构造函数，使用基类默认参数初始化。
         /// </summary>
-        public SimpleRogueLike() { }
+        public RogueLikeBSP() { }
 
         /// <summary>
         /// 使用指定房间值的构造函数。
         /// </summary>
         /// <param name="roomValue">房间在矩阵中使用的值。</param>
-        public SimpleRogueLike(int roomValue) : base(roomValue) { }
+        public RogueLikeBSP(int roomValue) : base(roomValue) { }
 
         /// <summary>
         /// 使用指定房间值和道路值的构造函数。
         /// </summary>
         /// <param name="roomValue">房间在矩阵中使用的值。</param>
         /// <param name="roadValue">道路在矩阵中使用的值。</param>
-        public SimpleRogueLike(int roomValue, int roadValue) : base(roomValue, roadValue) { }
+        public RogueLikeBSP(int roomValue, int roadValue) : base(roomValue, roadValue) { }
 
         /// <summary>
         /// 完整参数的构造函数，允许自定义划分和房间尺寸参数。
@@ -310,21 +311,21 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <param name="roomRandMaxX">房间X方向随机尺寸上限。</param>
         /// <param name="roomMinY">房间最小Y尺寸/边距。</param>
         /// <param name="roomRandMaxY">房间Y方向随机尺寸上限。</param>
-        public SimpleRogueLike(int roomValue, int roadValue, uint divisionMin,
+        public RogueLikeBSP(int roomValue, int roadValue, uint divisionMin,
             uint divisionRandMax, uint roomMinX, uint roomRandMaxX, uint roomMinY, uint roomRandMaxY) : base(roomValue, roadValue, divisionMin, divisionRandMax, roomMinX, roomRandMaxX, roomMinY, roomRandMaxY) { }
 
         /// <summary>
         /// 使用给定矩阵范围的构造函数（仅设置绘制范围）。
         /// </summary>
         /// <param name="matrixRange">矩阵范围（x,y,w,h）。</param>
-        public SimpleRogueLike(MatrixRange matrixRange) : base(matrixRange) { }
+        public RogueLikeBSP(MatrixRange matrixRange) : base(matrixRange) { }
 
         /// <summary>
         /// 使用矩阵范围和房间值的构造函数。
         /// </summary>
         /// <param name="matrixRange">矩阵范围。</param>
         /// <param name="roomValue">房间值。</param>
-        public SimpleRogueLike(MatrixRange matrixRange, int roomValue) : base(matrixRange, roomValue) { }
+        public RogueLikeBSP(MatrixRange matrixRange, int roomValue) : base(matrixRange, roomValue) { }
 
         /// <summary>
         /// 使用矩阵范围、房间值和道路值的构造函数。
@@ -332,7 +333,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <param name="matrixRange">矩阵范围。</param>
         /// <param name="roomValue">房间值。</param>
         /// <param name="roadValue">道路值。</param>
-        public SimpleRogueLike(MatrixRange matrixRange, int roomValue, int roadValue) : base(matrixRange, roomValue, roadValue) { }
+        public RogueLikeBSP(MatrixRange matrixRange, int roomValue, int roadValue) : base(matrixRange, roomValue, roadValue) { }
 
         /// <summary>
         /// 使用完整参数（范围、房间/道路值、划分与房间尺寸控制）构造。
@@ -346,7 +347,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <param name="roomRandMaxX">房间X方向随机上限。</param>
         /// <param name="roomMinY">房间最小Y尺寸。</param>
         /// <param name="roomRandMaxY">房间Y方向随机上限。</param>
-        public SimpleRogueLike(MatrixRange matrixRange, int roomValue, int roadValue, uint divisionMin,
+        public RogueLikeBSP(MatrixRange matrixRange, int roomValue, int roadValue, uint divisionMin,
             uint divisionRandMax, uint roomMinX, uint roomRandMaxX, uint roomMinY, uint roomRandMaxY)
             : base(matrixRange, roomValue, roadValue, divisionMin, divisionRandMax, roomMinX, roomRandMaxX, roomMinY, roomRandMaxY) { }
     }

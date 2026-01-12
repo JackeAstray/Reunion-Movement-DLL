@@ -55,10 +55,11 @@ namespace ReunionMovementDLL.Dungeon.Shape
     }
 
     /// <summary>
-    /// 生成类：基于矩形房间与通路生成类 RogueLike 地牢。
+    /// 生成类：基于矩形房间与通路生成类 RogueLike 地牢（经典实现）。
+    /// 名称已改为 RogueLikeClassic。
     /// 继承自 RectBaseRogueLike 并实现 IDrawer<int> 接口。
     /// </summary>
-    public sealed class RogueLike : RectBaseRogueLike<RogueLike>, IDrawer<int>
+    public sealed class RogueLikeClassic : RectBaseRogueLike<RogueLikeClassic>, IDrawer<int>
     {
         /// <summary>
         /// 地牢随机数生成器，用于房间大小、方向等随机选择。
@@ -482,7 +483,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <summary>
         /// 默认构造函数。
         /// </summary>
-        public RogueLike()
+        public RogueLikeClassic()
         {
         }
 
@@ -490,14 +491,14 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// 使用矩阵范围的构造函数。
         /// </summary>
         /// <param name="matrixRange">矩阵范围对象。</param>
-        public RogueLike(MatrixRange matrixRange) : base(matrixRange)
+        public RogueLikeClassic(MatrixRange matrixRange) : base(matrixRange)
         {
         }
 
         /// <summary>
         /// 使用起始坐标与尺寸初始化的构造函数。
         /// </summary>
-        public RogueLike(uint startX, uint startY, uint width, uint height) : base(startX, startY, width, height)
+        public RogueLikeClassic(uint startX, uint startY, uint width, uint height) : base(startX, startY, width, height)
         {
         }
 
@@ -505,21 +506,21 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// 使用绘制值列表初始化的构造函数。
         /// </summary>
         /// <param name="drawValue">包含各类瓦片 ID 的列表。</param>
-        public RogueLike(RogueLikeList drawValue) : base(drawValue)
+        public RogueLikeClassic(RogueLikeList drawValue) : base(drawValue)
         {
         }
 
         /// <summary>
         /// 初始化并指定最大通路数的构造函数。
         /// </summary>
-        public RogueLike(RogueLikeList drawValue, uint maxWay) : base(drawValue, maxWay)
+        public RogueLikeClassic(RogueLikeList drawValue, uint maxWay) : base(drawValue, maxWay)
         {
         }
 
         /// <summary>
         /// 初始化并指定最大通路数与房间范围的构造函数。
         /// </summary>
-        public RogueLike(RogueLikeList drawValue, uint maxWay, MatrixRange roomRange) : base(drawValue, maxWay,
+        public RogueLikeClassic(RogueLikeList drawValue, uint maxWay, MatrixRange roomRange) : base(drawValue, maxWay,
             roomRange)
         {
         }
@@ -527,7 +528,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <summary>
         /// 初始化并指定绘制范围与通路范围的构造函数。
         /// </summary>
-        public RogueLike(RogueLikeList drawValue, uint maxWay, MatrixRange roomRange, MatrixRange wayRange) : base(
+        public RogueLikeClassic(RogueLikeList drawValue, uint maxWay, MatrixRange roomRange, MatrixRange wayRange) : base(
             drawValue, maxWay, roomRange, wayRange)
         {
         }
@@ -535,7 +536,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <summary>
         /// 使用各类瓦片 ID 初始化的构造函数。
         /// </summary>
-        public RogueLike(int outsideWallId, int insideWallId, int roomId, int entranceId, int exitId, int wayId) : base(
+        public RogueLikeClassic(int outsideWallId, int insideWallId, int roomId, int entranceId, int exitId, int wayId) : base(
             outsideWallId, insideWallId, roomId, entranceId, exitId, wayId)
         {
         }
@@ -543,7 +544,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <summary>
         /// 使用各类瓦片 ID 并指定最大通路数的构造函数。
         /// </summary>
-        public RogueLike(int outsideWallId, int insideWallId, int roomId, int entranceId, int exitId, int wayId, uint maxWay) :
+        public RogueLikeClassic(int outsideWallId, int insideWallId, int roomId, int entranceId, int exitId, int wayId, uint maxWay) :
             base(outsideWallId, insideWallId, roomId, entranceId, exitId, wayId, maxWay)
         {
         }
@@ -551,7 +552,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <summary>
         /// 使用瓦片 ID、最大通路与房间范围初始化的构造函数。
         /// </summary>
-        public RogueLike(int outsideWallId, int insideWallId, int roomId, int entranceId, int exitId, int wayId, uint maxWay,
+        public RogueLikeClassic(int outsideWallId, int insideWallId, int roomId, int entranceId, int exitId, int wayId, uint maxWay,
             MatrixRange roomRange) : base(outsideWallId, insideWallId, roomId, entranceId, exitId, wayId, maxWay, roomRange)
         {
         }
@@ -559,7 +560,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <summary>
         /// 使用瓦片 ID、最大通路、房间范围与通路范围初始化的构造函数。
         /// </summary>
-        public RogueLike(int outsideWallId, int insideWallId, int roomId, int entranceId, int exitId, int wayId, uint maxWay,
+        public RogueLikeClassic(int outsideWallId, int insideWallId, int roomId, int entranceId, int exitId, int wayId, uint maxWay,
             MatrixRange roomRange, MatrixRange wayRange) : base(outsideWallId, insideWallId, roomId, entranceId, exitId, wayId,
             maxWay, roomRange, wayRange)
         {
@@ -568,7 +569,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <summary>
         /// 使用矩阵范围、绘制列表与最大通路数初始化的构造函数。
         /// </summary>
-        public RogueLike(MatrixRange matrixRange, RogueLikeList drawValue, uint maxWay) : base(matrixRange, drawValue,
+        public RogueLikeClassic(MatrixRange matrixRange, RogueLikeList drawValue, uint maxWay) : base(matrixRange, drawValue,
             maxWay)
         {
         }
@@ -576,7 +577,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <summary>
         /// 使用矩阵范围、绘制列表、最大通路数与房间范围初始化的构造函数。
         /// </summary>
-        public RogueLike(MatrixRange matrixRange, RogueLikeList drawValue, uint maxWay, MatrixRange roomRange) : base(
+        public RogueLikeClassic(MatrixRange matrixRange, RogueLikeList drawValue, uint maxWay, MatrixRange roomRange) : base(
             matrixRange, drawValue, maxWay, roomRange)
         {
         }
@@ -584,7 +585,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <summary>
         /// 使用矩阵范围、绘制列表、最大通路数、房间范围与通路范围初始化的构造函数。
         /// </summary>
-        public RogueLike(MatrixRange matrixRange, RogueLikeList drawValue, uint maxWay, MatrixRange roomRange,
+        public RogueLikeClassic(MatrixRange matrixRange, RogueLikeList drawValue, uint maxWay, MatrixRange roomRange,
             MatrixRange wayRange) : base(matrixRange, drawValue, maxWay, roomRange, wayRange)
         {
         }
@@ -592,7 +593,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <summary>
         /// 使用坐标、尺寸、绘制列表与最大通路数初始化的构造函数。
         /// </summary>
-        public RogueLike(uint startX, uint startY, uint width, uint height, RogueLikeList drawValue,
+        public RogueLikeClassic(uint startX, uint startY, uint width, uint height, RogueLikeList drawValue,
             uint maxWay) : base(startX, startY, width, height, drawValue, maxWay)
         {
         }
@@ -600,7 +601,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <summary>
         /// 使用坐标、尺寸、绘制列表、最大通路数与房间范围初始化的构造函数。
         /// </summary>
-        public RogueLike(uint startX, uint startY, uint width, uint height, RogueLikeList drawValue,
+        public RogueLikeClassic(uint startX, uint startY, uint width, uint height, RogueLikeList drawValue,
             uint maxWay, MatrixRange roomRange) : base(startX, startY, width, height, drawValue, maxWay, roomRange)
         {
         }
@@ -608,7 +609,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <summary>
         /// 使用坐标、尺寸、绘制列表、最大通路数、房间范围与通路范围初始化的构造函数。
         /// </summary>
-        public RogueLike(uint startX, uint startY, uint width, uint height, RogueLikeList drawValue,
+        public RogueLikeClassic(uint startX, uint startY, uint width, uint height, RogueLikeList drawValue,
             uint maxWay, MatrixRange roomRange, MatrixRange wayRange) : base(startX, startY, width, height, drawValue,
             maxWay, roomRange, wayRange)
         {
