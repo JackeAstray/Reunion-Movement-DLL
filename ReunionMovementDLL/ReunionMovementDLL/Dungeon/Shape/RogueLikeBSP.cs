@@ -56,7 +56,8 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <returns>始终返回true，表示绘制完成（当前实现不返回错误信息）。</returns>
         private bool DrawNormal(int[,] matrix_, uint endX_, uint endY_)
         {
-            var mapDivCount = divisionMin + rand.Next(divisionRandMax);
+            // 防护: 当 divisionRandMax 为 0 时不要调用 rand.Next(0)（会抛出）。
+            var mapDivCount = divisionMin + (divisionRandMax > 0 ? rand.Next(divisionRandMax) : 0u);
 
             var dungeonDivision = new uint[mapDivCount, 4];
 
@@ -135,10 +136,20 @@ namespace ReunionMovementDLL.Dungeon.Shape
                     if (dungeonRoad[j, 0] == divisionAfter) dungeonRoad[j, 0] = (uint)i;
                 }
 
-                dungeonDivision[i, count] =
-                    dungeonDivision[divisionAfter, count + 2]
-                    + (dungeonDivision[divisionAfter, count] - dungeonDivision[divisionAfter, count + 2]) / 3
-                    + (uint)rand.Next(1, (dungeonDivision[divisionAfter, count] - dungeonDivision[divisionAfter, count + 2]) / 3);
+                // 计算用于随机分割的区间长度并防护 rand.Next 的参数
+                uint span = (dungeonDivision[divisionAfter, count] - dungeonDivision[divisionAfter, count + 2]) / 3;
+                if (span <= 1)
+                {
+                    // 如果可用区间过小，退化为靠近起点的一个较小偏移，避免调用 rand.Next(1,1) 抛异常
+                    dungeonDivision[i, count] = dungeonDivision[divisionAfter, count + 2] + 1;
+                }
+                else
+                {
+                    dungeonDivision[i, count] =
+                        dungeonDivision[divisionAfter, count + 2]
+                        + span
+                        + (uint)rand.Next(1, span);
+                }
 
                 dungeonDivision[i, count + 2] = dungeonDivision[divisionAfter, count + 2];
                 dungeonDivision[divisionAfter, count + 2] = dungeonDivision[i, count];
@@ -191,9 +202,11 @@ namespace ReunionMovementDLL.Dungeon.Shape
 
 
                 uint diffY = dungeonDivision[i, 0] - dungeonRoom[i, 0];
-                uint l = diffY <= 5 ? 2 : rand.Next(1, diffY - 5) + 2;
+                // 修复：当 diffY == 6 时 diffY - 5 == 1，调用 rand.Next(1,1) 会抛异常。
+                // 因此将阈值从 <=5 调整为 <=6，确保只有在足够大的区间才调用 rand.Next(min,max)。
+                uint l = diffY <= 6 ? 2 : rand.Next(1, diffY - 5) + 2;
                 uint diffX = dungeonDivision[i, 1] - dungeonRoom[i, 1];
-                uint n = diffX <= 5 ? 2 : rand.Next(1, diffX - 5) + 2;
+                uint n = diffX <= 6 ? 2 : rand.Next(1, diffX - 5) + 2;
 
                 dungeonRoom[i, 0] += l;
                 dungeonRoom[i, 2] += l;
@@ -327,7 +340,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// 绘制并返回日志（未实现）。
         /// </summary>
         /// <param name="matrix">目标矩阵。</param>
-        /// <param name="log">输出日志字符串（未实现）。</param>
+        /// <param name="log">输出日志字符串（未实现）。param>
         /// <returns>当前实现抛出NotImplementedException。</returns>
         public bool Draw(int[,] matrix, out string log)
         {
