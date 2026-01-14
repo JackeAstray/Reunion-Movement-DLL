@@ -235,10 +235,10 @@ namespace ReunionMovementDLL.Dungeon.Shape
                     case RL_COUNT_X:
                         {
                             uint wBefore = dungeonRoom[roomBefore, 1] - dungeonRoom[roomBefore, 3];
-                            dungeonRoad[roomBefore, 2] = wBefore > 1 ? rand.Next(wBefore - 1) : 0;
+                            dungeonRoad[roomBefore, 2] = wBefore > 2 ? rand.Next(wBefore - 2) + 1 : 0;
 
                             uint wAfter = dungeonRoom[roomAfter, 1] - dungeonRoom[roomAfter, 3];
-                            dungeonRoad[roomBefore, 3] = wAfter > 1 ? rand.Next(wAfter - 1) : 0;
+                            dungeonRoad[roomBefore, 3] = wAfter > 2 ? rand.Next(wAfter - 2) + 1 : 0;
                         }
 
                         for (uint j = dungeonRoom[roomBefore, 0]; j < dungeonDivision[roomBefore, 0]; ++j)
@@ -255,20 +255,69 @@ namespace ReunionMovementDLL.Dungeon.Shape
 
                         if (useDoor)
                         {
-                            // Before Room Bottom Door
+                            // 房间底部门前 - 禁止放在角落；如可向内移动一格，否则不放门
                             if (dungeonRoom[roomBefore, 0] > 0)
-                                matrix_[dungeonRoom[roomBefore, 0] - 1, dungeonRoad[roomBefore, 2] + dungeonRoom[roomBefore, 3]] = rogueLikeList.entranceId;
-                            // After Room Top Door
-                            matrix_[dungeonRoom[roomAfter, 2], dungeonRoad[roomBefore, 3] + dungeonRoom[roomAfter, 3]] = rogueLikeList.entranceId;
+                            {
+                                int doorX = (int)(dungeonRoad[roomBefore, 2] + dungeonRoom[roomBefore, 3]);
+                                int roomLeft = (int)dungeonRoom[roomBefore, 3];
+                                int roomRight = (int)dungeonRoom[roomBefore, 1] - 1;
+                                bool place = true;
+
+                                // 如果门在左角，尝试向右移动一个位置
+                                if (doorX == roomLeft)
+                                {
+                                    if (roomLeft + 1 <= roomRight - 1)
+                                        doorX = roomLeft + 1;
+                                    else
+                                        place = false;
+                                }
+                                // 如果门在右拐角，试着向左移动一步
+                                else if (doorX == roomRight)
+                                {
+                                    if (roomRight - 1 >= roomLeft + 1)
+                                        doorX = roomRight - 1;
+                                    else
+                                        place = false;
+                                }
+
+                                if (place)
+                                    matrix_[(int)dungeonRoom[roomBefore, 0] - 1, doorX] = rogueLikeList.entranceId;
+                            }
+
+                            // 顶部房间门后 - 禁止放在角落；如可向内移动一格，否则不放门
+                            {
+                                int doorX = (int)(dungeonRoad[roomBefore, 3] + dungeonRoom[roomAfter, 3]);
+                                int roomLeft = (int)dungeonRoom[roomAfter, 3];
+                                int roomRight = (int)dungeonRoom[roomAfter, 1] - 1;
+                                bool place = true;
+
+                                if (doorX == roomLeft)
+                                {
+                                    if (roomLeft + 1 <= roomRight - 1)
+                                        doorX = roomLeft + 1;
+                                    else
+                                        place = false;
+                                }
+                                else if (doorX == roomRight)
+                                {
+                                    if (roomRight - 1 >= roomLeft + 1)
+                                        doorX = roomRight - 1;
+                                    else
+                                        place = false;
+                                }
+
+                                if (place)
+                                    matrix_[(int)dungeonRoom[roomAfter, 2], doorX] = rogueLikeList.entranceId;
+                            }
                         }
                         break;
                     case RL_COUNT_Y:
                         {
                             uint hBefore = dungeonRoom[roomBefore, 0] - dungeonRoom[roomBefore, 2];
-                            dungeonRoad[roomBefore, 2] = hBefore > 1 ? rand.Next(hBefore - 1) : 0;
+                            dungeonRoad[roomBefore, 2] = hBefore > 2 ? rand.Next(hBefore - 2) + 1 : 0;
 
                             uint hAfter = dungeonRoom[roomAfter, 0] - dungeonRoom[roomAfter, 2];
-                            dungeonRoad[roomBefore, 3] = hAfter > 1 ? rand.Next(hAfter - 1) : 0;
+                            dungeonRoad[roomBefore, 3] = hAfter > 2 ? rand.Next(hAfter - 2) + 1 : 0;
                         }
 
                         for (uint j = dungeonRoom[roomBefore, 1]; j < dungeonDivision[roomBefore, 1]; ++j)
@@ -284,11 +333,59 @@ namespace ReunionMovementDLL.Dungeon.Shape
 
                         if (useDoor)
                         {
-                            // Before Room Right Door
+                            // 右侧房间门前 - 禁止放在角落；如可向内移动一格，否则不放门
                             if (dungeonRoom[roomBefore, 1] > 0)
-                                matrix_[dungeonRoad[roomBefore, 2] + dungeonRoom[roomBefore, 2], dungeonRoom[roomBefore, 1] - 1] = rogueLikeList.entranceId;
-                            // After Room Left Door
-                            matrix_[dungeonRoad[roomBefore, 3] + dungeonRoom[roomAfter, 2], dungeonRoom[roomAfter, 3]] = rogueLikeList.entranceId;
+                            {
+                                int doorY = (int)(dungeonRoad[roomBefore, 2] + dungeonRoom[roomBefore, 2]);
+                                int roomTop = (int)dungeonRoom[roomBefore, 2];
+                                int roomBottom = (int)dungeonRoom[roomBefore, 0] - 1;
+                                int doorX = (int)dungeonRoom[roomBefore, 1] - 1;
+                                bool place = true;
+
+                                if (doorY == roomTop)
+                                {
+                                    if (roomTop + 1 <= roomBottom - 1)
+                                        doorY = roomTop + 1;
+                                    else
+                                        place = false;
+                                }
+                                else if (doorY == roomBottom)
+                                {
+                                    if (roomBottom - 1 >= roomTop + 1)
+                                        doorY = roomBottom - 1;
+                                    else
+                                        place = false;
+                                }
+
+                                if (place)
+                                    matrix_[doorY, doorX] = rogueLikeList.entranceId;
+                            }
+                            // 房间左侧门后 - 禁止放在角落；如可向内移动一格，否则不放门
+                            {
+                                int doorY = (int)(dungeonRoad[roomBefore, 3] + dungeonRoom[roomAfter, 2]);
+                                int roomTop = (int)dungeonRoom[roomAfter, 2];
+                                int roomBottom = (int)dungeonRoom[roomAfter, 0] - 1;
+                                int doorX = (int)dungeonRoom[roomAfter, 3];
+                                bool place = true;
+
+                                if (doorY == roomTop)
+                                {
+                                    if (roomTop + 1 <= roomBottom - 1)
+                                        doorY = roomTop + 1;
+                                    else
+                                        place = false;
+                                }
+                                else if (doorY == roomBottom)
+                                {
+                                    if (roomBottom - 1 >= roomTop + 1)
+                                        doorY = roomBottom - 1;
+                                    else
+                                        place = false;
+                                }
+
+                                if (place)
+                                    matrix_[doorY, doorX] = rogueLikeList.entranceId;
+                            }
                         }
                         break;
 
