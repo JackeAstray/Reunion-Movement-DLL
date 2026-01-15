@@ -24,12 +24,6 @@ namespace ReunionMovementDLLTest
                 RunClusteringMaze(width, height + 1);
                 RunBorder(width, height);
                 RunRandomRect(width, height);
-
-                // 其它 Shape 示例
-                RunPerlinIsland(width, height);
-                RunFractalIsland(width, height);
-                RunDiamondSquareAverageIsland(width, height);
-                RunDiamondSquareAverageCornerIsland(width, height);
             }
             catch (Exception ex)
             {
@@ -143,36 +137,6 @@ namespace ReunionMovementDLLTest
             var rnd = new RandomRect(3, 0.5);
             rnd.startX = 0u; rnd.startY = 0u; rnd.width = (uint)width; rnd.height = (uint)height;
             GenerateAndPrintGeneric("RandomRect", rnd, width, height);
-        }
-
-        // --- 其它 Shape 示例方法 ---
-
-        static void RunPerlinIsland(int width, int height)
-        {
-            dynamic perlin = new PerlinIsland();
-            perlin.SetPoint(0u, 0u).SetRange(0u, 0u, (uint)width, (uint)height);
-            GenerateAndPrintGeneric("PerlinIsland", perlin, width, height);
-        }
-
-        static void RunFractalIsland(int width, int height)
-        {
-            dynamic fractal = new FractalIsland();
-            fractal.SetPoint(0u, 0u).SetRange(0u, 0u, (uint)width, (uint)height);
-            GenerateAndPrintGeneric("FractalIsland", fractal, width, height);
-        }
-
-        static void RunDiamondSquareAverageIsland(int width, int height)
-        {
-            dynamic ds = new DiamondSquareAverageIsland();
-            ds.SetPoint(0u, 0u).SetRange(0u, 0u, (uint)width, (uint)height);
-            GenerateAndPrintGeneric("DiamondSquareAverageIsland", ds, width, height);
-        }
-
-        static void RunDiamondSquareAverageCornerIsland(int width, int height)
-        {
-            dynamic dsCorner = new DiamondSquareAverageCornerIsland();
-            dsCorner.SetPoint(0u, 0u).SetRange(0u, 0u, (uint)width, (uint)height);
-            GenerateAndPrintGeneric("DiamondSquareAverageCornerIsland", dsCorner, width, height);
         }
 
         // 重用的打印函数（适合瓦片与高度图）
