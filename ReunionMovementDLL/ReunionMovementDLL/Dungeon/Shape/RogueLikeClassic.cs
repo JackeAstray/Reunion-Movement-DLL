@@ -12,7 +12,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
     /// <summary>
     /// 存储房间或通路位置与尺寸的简单数据结构。
     /// </summary>
-    class RogueLikeOutputNumber
+    public class RogueLikeOutputNumber
     {
         /// <summary>
         /// 矩形左上角 X 坐标（相对于矩阵起点）。

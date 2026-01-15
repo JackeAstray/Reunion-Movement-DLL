@@ -56,6 +56,19 @@ namespace ReunionMovementDLLTest
         static void RunRogueLikeTinyKeep(RogueLikeList drawList, int width, int height)
         {
             dynamic tiny = new RogueLikeTinyKeep(drawList, 80u);
+            // 演示：添加固定房间模板（相对坐标，位于绘制区域内部），这些房间会在随机房间生成前尝试放置
+            try
+            {
+                var fixedRooms = new System.Collections.Generic.List<RogueLikeOutputNumber>
+                {
+                    // x, y, w, h（相对绘制区域坐标）
+                    new RogueLikeOutputNumber(4, 3, 10, 6),
+                    new RogueLikeOutputNumber(30, 10, 12, 8),
+                };
+                tiny.SetFixedRooms(fixedRooms);
+            }
+            catch { }
+
             // 确保内部的 rogueLikeList 与我们绘制映射一致
             try { tiny.SetValue(drawList); } catch { }
             tiny.SetPoint(0u, 0u).SetRange(0u, 0u, (uint)width, (uint)height);

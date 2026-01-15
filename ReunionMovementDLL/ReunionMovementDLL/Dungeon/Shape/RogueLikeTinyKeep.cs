@@ -19,6 +19,30 @@ namespace ReunionMovementDLL.Dungeon.Shape
     {
         private DungeonRandom rand = new DungeonRandom();
 
+        // 支持固定房间模板（相对坐标）
+        private List<RogueLikeOutputNumber> fixedRooms = new List<RogueLikeOutputNumber>();
+
+        /// <summary>
+        /// 设置固定房间模板（相对绘制区域坐标）。调用后这些房间将在随机房间生成前尝试放置。
+        /// </summary>
+        /// <param name="rooms">房间模板列表（相对坐标 x,y,w,h）。</param>
+        /// <returns>当前实例，便于链式调用。</returns>
+        public RogueLikeTinyKeep SetFixedRooms(List<RogueLikeOutputNumber> rooms)
+        {
+            this.fixedRooms = rooms ?? new List<RogueLikeOutputNumber>();
+            return this;
+        }
+
+        /// <summary>
+        /// 清除所有固定房间模板。
+        /// </summary>
+        /// <returns>当前实例。</returns>
+        public RogueLikeTinyKeep ClearFixedRooms()
+        {
+            this.fixedRooms.Clear();
+            return this;
+        }
+
         /// <summary>
         /// 默认构造函数，创建 RogueLikeTinyKeep 的实例。
         /// </summary>
@@ -41,7 +65,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
 
         /// <summary>
         /// 在给定矩阵上绘制地牢（入口方法）。
-        /// 如果起始坐标越界返回 false，否则调用核心绘制函数 DrawNormal。
+        /// 如果起始坐标越界返回 false，否则调用核心绘制函数 DrawNormal.
         /// </summary>
         /// <param name="matrix">目标矩阵（整型二维数组）。param>
         /// <returns>是否成功绘制。</returns>
@@ -77,6 +101,7 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <summary>
         /// 核心绘制逻辑：采样房间中心、放置房间、构建全连边并计算最小生成树（Prim），
         /// 最后在 MST 的边上开凿走廊并可选添加额外边以形成循环。
+        /// 支持在生成前放置若干固定房间模板，其他房间按随机采样分布。
         /// </summary>
         /// <param name="matrix">目标矩阵。</param>
         /// <returns>是否成功生成地牢。</returns>
@@ -95,11 +120,30 @@ namespace ReunionMovementDLL.Dungeon.Shape
             int estimatedCapacity = Math.Max(1, (areaW * areaH) / Math.Max(1, minSep * minSep));
             int target = (int)Math.Max(3, Math.Min((int)maxWay, Math.Max(20, estimatedCapacity)));
 
-            var centers = SamplePoints(areaW, areaH, target, minSep);
-            if (centers.Count < 2) return false;
-
-            // 放置房间
+            // 先尝试放置固定房间模板（如果有）
             var rooms = new List<RogueLikeOutputNumber>();
+            var fixedCenters = new List<PairInt>();
+            if (fixedRooms != null && fixedRooms.Count > 0)
+            {
+                foreach (var f in fixedRooms)
+                {
+                    // 尝试放置；PlaceRoom 参数为相对坐标，矩阵使用 startX/startY 偏移
+                    if (PlaceRoom(matrix, areaW, areaH, f, rogueLikeList.roomId))
+                    {
+                        rooms.Add(new RogueLikeOutputNumber(f.x, f.y, f.w, f.h));
+                        fixedCenters.Add(new PairInt(f.x + f.w / 2, f.y + f.h / 2));
+                    }
+                }
+            }
+
+            // 只采样剩余的房间中心数量，避免与固定中心冲突
+            int remaining = target - fixedCenters.Count;
+            if (remaining < 0) remaining = 0;
+
+            var centers = SamplePoints(areaW, areaH, remaining, minSep, fixedCenters);
+            if (fixedCenters.Count + centers.Count < 2) return false;
+
+            // 放置采样到的房间
             foreach (var c in centers)
             {
                 var rw = rand.Next(roomRange.x, roomRange.x + roomRange.w);
@@ -266,17 +310,20 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <summary>
         /// 简单的拒绝采样：在给定区域内采样若干整数坐标点，保证彼此距离至少 minSep。
         /// 返回的坐标为相对于绘制范围（不含 startX/startY 偏移）的整数点。
+        /// 支持传入已存在的点集合（例如固定房间中心），新采样点会避开这些点。
         /// </summary>
         /// <param name="areaW">绘制区域宽度（相对值）。param>
         /// <param name="areaH">绘制区域高度（相对值）。param>
         /// <param name="target">目标采样点数量。</param>
         /// <param name="minSep">采样点间最小欧式距离（整数）。</param>
+        /// <param name="existing">可选的已存在点列表，新的点会避免这些点。</param>
         /// <returns>采样到的点列表（PairInt）</returns>
-        private List<PairInt> SamplePoints(int areaW, int areaH, int target, int minSep)
+        private List<PairInt> SamplePoints(int areaW, int areaH, int target, int minSep, List<PairInt> existing = null)
         {
             var list = new List<PairInt>();
             int attempts = 0;
             int maxAttempts = Math.Max(target * 40, 2000);
+            existing = existing ?? new List<PairInt>();
             while (list.Count < target && attempts < maxAttempts)
             {
                 attempts++;
@@ -285,6 +332,16 @@ namespace ReunionMovementDLL.Dungeon.Shape
                 int y = (int)rand.Next(1, (uint)Math.Max(2, (uint)(areaH - 2)));
                 bool ok = true;
                 foreach (var p in list)
+                {
+                    var dx = p.X - x;
+                    var dy = p.Y - y;
+                    if (dx * dx + dy * dy < minSep * minSep)
+                    {
+                        ok = false; break;
+                    }
+                }
+                if (!ok) continue;
+                foreach (var p in existing)
                 {
                     var dx = p.X - x;
                     var dy = p.Y - y;
