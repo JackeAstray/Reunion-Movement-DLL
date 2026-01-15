@@ -14,6 +14,10 @@ namespace ReunionMovementDLL.Dungeon.Shape
     {
         private RandomBase rand = new RandomBase();
 
+        // 可配置的出口数量：
+        // 0 表示使用默认随机策略（2-10 个）；大于等于 1 表示固定出口数量（会被限制在候选数量范围内）
+        public int ExitCount { get; set; } = 0;
+
         /// <summary>
         /// 四个方向的枚举值，表示上、右、下、左。
         /// </summary>
@@ -104,104 +108,17 @@ namespace ReunionMovementDLL.Dungeon.Shape
             }
         }
 
-        /// <summary>
-        /// 为指定单元(x,y)查找一个不同集合的邻居并与之合并（如果存在）。
-        /// 如果找到不同集合的邻居，会将对应的outX/outY/outDir设置为邻居位置和方向。
-        /// </summary>
-        /// <param name="data">并查集的父指针数组。</param>
-        /// <param name="rank">用于按秩合并的秩数组。</param>
-        /// <param name="mWidth">缩小格子宽度（单元格数）。</param>
-        /// <param name="mHeight">缩小格子高度（单元格数）。</param>
-        /// <param name="mSize">总单元格数（mWidth * mHeight）。</param>
-        /// <param name="x">单元格的x索引（在mWidth范围内）。</param>
-        /// <param name="y">单元格的y索引（在mHeight范围内）。</param>
-        /// <param name="outX">输出参数：找到的邻居x。</param>
-        /// <param name="outY">输出参数：找到的邻居y。</param>
-        /// <param name="outDir">输出参数：从原单元到邻居的方向。</param>
-        private void uniteDifNeighbor(uint[] data, uint[] rank, uint mWidth, uint mHeight, uint mSize, uint x, uint y,
-            ref uint outX, ref uint outY, ref Direction outDir)
+        private struct Edge
         {
-            uint oX = 0, oY = 0;
-            Direction oDir = Direction.UP_DIR;
-            if (this.findDifNeighbor(data, mWidth, mHeight, mSize, x, y, ref oX, ref oY, ref oDir) != -1)
-                this.unite(data, rank, y * mWidth + x, oY * mWidth + oX);
-            outX = oX;
-            outY = oY;
-            outDir = oDir;
-        }
-
-        /// <summary>
-        /// 查找与单元(x,y)不属于同一集合的邻居（随机顺序检查同一集合内的单元和方向）。
-        /// 如果找到，返回0并通过out参数设置邻居位置和方向；如果未找到，返回-1。
-        /// </summary>
-        /// <param name="data">并查集的父指针数组。</param>
-        /// <param name="mWidth">缩小格子宽度（单元格数）。</param>
-        /// <param name="mHeight">缩小格子高度（单元格数）。</param>
-        /// <param name="mSize">总单元格数（mWidth * mHeight）。</param>
-        /// <param name="x">单元格的x索引（在mWidth范围内）。</param>
-        /// <param name="y">单元格的y索引（在mHeight范围内）。</param>
-        /// <param name="outX">输出参数：找到的邻居x。</param>
-        /// <param name="outY">输出参数：找到的邻居y。</param>
-        /// <param name="outDir">输出参数：从原单元到邻居的方向。</param>
-        /// <returns>找到返回0，未找到返回-1。</returns>
-        int findDifNeighbor(uint[] data, uint mWidth, uint mHeight, uint mSize, uint x, uint y,
-            ref uint outX, ref uint outY, ref Direction outDir)
-        {
-            var sameTags = new List<uint>();
-            var cellind = y * mWidth + x;
-            for (uint i = 0; i < mSize; ++i)
+            public uint x;
+            public uint y;
+            public Direction dir;
+            public Edge(uint x, uint y, Direction dir)
             {
-                if (this.same(data, cellind, i)) sameTags.Add(i);
+                this.x = x;
+                this.y = y;
+                this.dir = dir;
             }
-
-            ArrayUtil.Shuffle(sameTags, rand);
-
-            uint cell1X = 0, cell1Y = 0, cell2X = 0, cell2Y = 0, cell2ind = 0;
-            var dirs = new Direction[4];
-            dirs[0] = Direction.UP_DIR;
-            dirs[1] = Direction.RIGHT_DIR;
-            dirs[2] = Direction.DOWN_DIR;
-            dirs[3] = Direction.LEFT_DIR;
-
-            foreach (var cell1ind in sameTags)
-            {
-                //                Debug.Log(cell1ind);
-                cell1X = cell1ind % mWidth;
-                cell1Y = cell1ind / mWidth;
-                dirs = ArrayUtil.Shuffle(dirs, rand);
-                foreach (var dir in dirs)
-                {
-                    //                    Debug.Log(dir.ToString());
-                    if ((dirDx(dir) < 0 && cell1X == 0) || (dirDx(dir) > 0 && cell1X == mWidth - 1)) continue;
-                    cell2X = (uint)((int)cell1X + dirDx(dir));
-                    if ((dirDy(dir) < 0 && cell1Y == 0) || (dirDy(dir) > 0 && cell1Y == mHeight - 1)) continue;
-                    cell2Y = (uint)((int)cell1Y + dirDy(dir));
-                    cell2ind = cell2Y * mWidth + cell2X;
-                    if (!this.same(data, cell1ind, cell2ind))
-                    {
-                        outX = cell2X;
-                        outY = cell2Y;
-                        outDir = dir;
-                        return 0;
-                    }
-                }
-            }
-
-            return -1;
-        }
-
-        /// <summary>
-        /// 检查并查集中是否所有元素都属于同一集合（即迷宫是否已完全连通）。
-        /// </summary>
-        /// <param name="data">并查集的父指针数组。</param>
-        /// <param name="dSize">并查集大小（元素数）。</param>
-        /// <returns>如果所有元素都与索引0相同（连通）则返回true。</returns>
-        private bool isAllSame(uint[] data, uint dSize)
-        {
-            for (uint i = 1; i < dSize; ++i)
-                if (!this.same(data, i, 0))
-                    return false;
-            return true;
         }
 
         /// <summary>
@@ -237,6 +154,20 @@ namespace ReunionMovementDLL.Dungeon.Shape
             var width = this.CalcEndX(MatrixUtil.GetX(matrix) - this.startX);
             var height = this.CalcEndY(MatrixUtil.GetY(matrix) - this.startY);
 
+            // Determine wall value (default 0, unless drawValue is 0 then 1)
+            // 确定墙壁值（默认为0，如果绘制值为0则为1），用于初始化背景
+            int wallValue = this.drawValue == 0 ? 1 : 0;
+
+            // Fill the area with walls first to ensure a proper maze background
+            // 首先用墙壁填充区域，确保迷宫背景正确，避免出现“多入口”或不连通的视觉假象
+            for (var y = 0; y < height; ++y)
+            {
+                for (var x = 0; x < width; ++x)
+                {
+                    matrix[this.startY + y, this.startX + x] = wallValue;
+                }
+            }
+
             var width3 = width % 2 == 0 ? width - 1 : width;
             var height3 = height % 2 == 0 ? height - 1 : height;
 
@@ -257,20 +188,93 @@ namespace ReunionMovementDLL.Dungeon.Shape
             var rank = new uint[mSize];
             for (uint i = 0; i < mSize; ++i) data[i] = i; // 自分の親は自分
 
-            uint randCellX = 0;
-            uint randCellY = 0;
-            uint outX = 0;
-            uint outY = 0;
-            Direction outDir = Direction.UP_DIR;
-            while (!this.isAllSame(data, mSize))
+            var edges = new List<Edge>();
+            for (uint y = 0; y < mHeight; ++y)
             {
-                randCellX = rand.Next() % (width3 / 2);
-                randCellY = rand.Next() % (height3 / 2);
+                for (uint x = 0; x < mWidth; ++x)
+                {
+                    if (x + 1 < mWidth) edges.Add(new Edge(x, y, Direction.RIGHT_DIR));
+                    if (y + 1 < mHeight) edges.Add(new Edge(x, y, Direction.DOWN_DIR));
+                }
+            }
 
-                this.uniteDifNeighbor(data, rank, mWidth, mHeight, mSize, randCellX, randCellY, ref outX, ref outY, ref outDir);
+            ArrayUtil.Shuffle(edges, rand);
 
-                // break wall
-                matrix[2 * outY + 1 - this.dirDy(outDir), 2 * outX + 1 - this.dirDx(outDir)] = this.drawValue;
+            foreach (var e in edges)
+            {
+                var cell1 = e.y * mWidth + e.x;
+                var cell2X = (uint)((int)e.x + dirDx(e.dir));
+                var cell2Y = (uint)((int)e.y + dirDy(e.dir));
+                var cell2 = cell2Y * mWidth + cell2X;
+
+                if (!this.same(data, cell1, cell2))
+                {
+                    this.unite(data, rank, cell1, cell2);
+                    matrix[this.startY + 2 * e.y + 1 + dirDy(e.dir), this.startX + 2 * e.x + 1 + dirDx(e.dir)] = this.drawValue;
+                }
+            }
+
+            // 生成2-10个随机出入口，确保贯通
+            var candidates = new List<(int x, int y, Direction dir)>();
+
+            // Top (y=0) and Bottom (y=height-1) - Valid x are odd columns
+            for (var i = 0; i < mWidth; ++i)
+            {
+                int x = 2 * i + 1;
+                candidates.Add((x, 0, Direction.UP_DIR));
+                candidates.Add((x, (int)height - 1, Direction.DOWN_DIR));
+            }
+
+            // Left (x=0) and Right (x=width-1) - Valid y are odd rows
+            for (var j = 0; j < mHeight; ++j)
+            {
+                int y = 2 * j + 1;
+                candidates.Add((0, y, Direction.LEFT_DIR));
+                candidates.Add(((int)width - 1, y, Direction.RIGHT_DIR));
+            }
+
+            // Shuffle candidates
+            int n = candidates.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = (int)rand.Next((uint)(n + 1));
+                var val = candidates[k];
+                candidates[k] = candidates[n];
+                candidates[n] = val;
+            }
+
+            // Select 2 to 10 entrances
+            int entranceCount;
+            if (this.ExitCount >= 2 && this.ExitCount <= 10)
+            {
+                entranceCount = this.ExitCount;
+            }
+            else
+            {
+                entranceCount = (int)rand.Next(2, 11);
+            }
+            if (entranceCount > candidates.Count) entranceCount = candidates.Count;
+
+            for (int k = 0; k < entranceCount; ++k)
+            {
+                var (cx, cy, dir) = candidates[k];
+                if (dir == Direction.UP_DIR || dir == Direction.LEFT_DIR)
+                {
+                    matrix[this.startY + cy, this.startX + cx] = this.drawValue;
+                }
+                else if (dir == Direction.DOWN_DIR)
+                {
+                    // Drill from bottom up to the effective maze boundary (height3 - 1)
+                    for (int y = cy; y >= (int)height3 - 1; --y)
+                        matrix[this.startY + y, this.startX + cx] = this.drawValue;
+                }
+                else if (dir == Direction.RIGHT_DIR)
+                {
+                    // Drill from right left to the effective maze boundary (width3 - 1)
+                    for (int x = cx; x >= (int)width3 - 1; --x)
+                        matrix[this.startY + cy, this.startX + x] = this.drawValue;
+                }
             }
 
             return true;
