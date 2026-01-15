@@ -75,9 +75,9 @@ namespace ReunionMovementDLLTest
 
         static char TileChar(int value, RogueLikeList rl)
         {
-            if (value == rl.outsideWallId) return '□';
+            if (value == rl.outsideWallId) return ' ';
             if (value == rl.insideWallId) return '■';
-            if (value == rl.roomId) return '☆';
+            if (value == rl.roomId) return '□';
             if (value == rl.entranceId) return '△';
             if (value == rl.wayId) return '◇';
             // 未知瓦片的默认字符
