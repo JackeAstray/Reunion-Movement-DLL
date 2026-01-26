@@ -195,17 +195,17 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <param name="branchPoint">分支点列表。</param>
         /// <param name="isWayList">分支点对应的是否为通路的列表。</param>
         /// <param name="isWay">当前分支点是否标记为通路。</param>
-        /// <param name="x_">分支点内部随机选取的 X 坐标。</param>
-        /// <param name="y_">分支点内部随机选取的 Y 坐标。</param>
-        /// <param name="dir_">尝试创建的方向。</param>
+        /// <param name="x">分支点内部随机选取的 X 坐标。</param>
+        /// <param name="y">分支点内部随机选取的 Y 坐标。</param>
+        /// <param name="dir">尝试创建的方向。</param>
         /// <returns>是否成功创建房间或通路。</returns>
         private bool CreateNext(int[,] matrix, uint sizeX, uint sizeY, List<RogueLikeOutputNumber> roomRect,
-            List<RogueLikeOutputNumber> branchPoint, List<bool> isWayList, bool isWay, int x_, int y_, Direction dir_)
+            List<RogueLikeOutputNumber> branchPoint, List<bool> isWayList, bool isWay, int x, int y, Direction dir)
         {
             int dx = 0;
             int dy = 0;
 
-            switch (dir_)
+            switch (dir)
             {
                 case Direction.North:
                     dy = 1;
@@ -222,42 +222,42 @@ namespace ReunionMovementDLL.Dungeon.Shape
             }
 
             // 检查边界与现有房间/通路冲突
-            if (startX + x_ + dx < 0 || startX + x_ + dx >= sizeX || startY + y_ + dy < 0 ||
-                startY + y_ + dy >= sizeY)
+            if (x + dx < 0 || x + dx >= sizeX || y + dy < 0 ||
+                y + dy >= sizeY)
             {
                 return false;
             }
 
             // 当前位置必须是房间或通路
-            if (matrix[startY + y_ + dy, startX + x_ + dx] != rogueLikeList.roomId &&
-                matrix[startY + y_ + dy, startX + x_ + dx] != rogueLikeList.wayId) return false;
+            if (matrix[startY + y + dy, startX + x + dx] != rogueLikeList.roomId &&
+                matrix[startY + y + dy, startX + x + dx] != rogueLikeList.wayId) return false;
 
             if (!isWay)
             {
-                if (!MakeWay(matrix, sizeX, sizeY, branchPoint, isWayList, x_, y_, dir_)) return false;
-                if (matrix[startY + y_ + dy, startX + x_ + dx] == rogueLikeList.roomId)
-                    matrix[y_, x_] = rogueLikeList.entranceId;
-                else matrix[y_, x_] = rogueLikeList.wayId;
+                if (!MakeWay(matrix, sizeX, sizeY, branchPoint, isWayList, x, y, dir)) return false;
+                if (matrix[startY + y + dy, startX + x + dx] == rogueLikeList.roomId)
+                    matrix[startY + y, startX + x] = rogueLikeList.entranceId;
+                else matrix[startY + y, startX + x] = rogueLikeList.wayId;
                 return true;
             }
 
             // 随机决定是创建房间还是通路
             if (rand.Probability(0.5))
             {
-                if (!MakeRoom(matrix, sizeX, sizeY, roomRect, branchPoint, isWayList, x_, y_, dir_)) return false;
-                matrix[y_, x_] = rogueLikeList.entranceId;
+                if (!MakeRoom(matrix, sizeX, sizeY, roomRect, branchPoint, isWayList, x, y, dir)) return false;
+                matrix[startY + y, startX + x] = rogueLikeList.entranceId;
                 return true;
             }
 
             // 创建通路
-            if (!MakeWay(matrix, sizeX, sizeY, branchPoint, isWayList, x_, y_, dir_)) return false;
-            if (matrix[startY + y_ + dy, startX + x_ + dx] == rogueLikeList.roomId)
+            if (!MakeWay(matrix, sizeX, sizeY, branchPoint, isWayList, x, y, dir)) return false;
+            if (matrix[startY + y + dy, startX + x + dx] == rogueLikeList.roomId)
             {
-                matrix[y_, x_] = rogueLikeList.entranceId;
+                matrix[startY + y, startX + x] = rogueLikeList.entranceId;
             }
             else
             {
-                matrix[y_, x_] = rogueLikeList.wayId;
+                matrix[startY + y, startX + x] = rogueLikeList.wayId;
             }
 
             return true;
@@ -271,38 +271,38 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <param name="sizeY">相对高度。</param>
         /// <param name="branchPoint">分支点列表（用于添加新分支）。</param>
         /// <param name="isWay">对应分支点是否为通路列表（用于添加）。</param>
-        /// <param name="x_">起点 X。</param>
-        /// <param name="y_">起点 Y。</param>
-        /// <param name="dir_">通路方向。</param>
+        /// <param name="x">起点 X。</param>
+        /// <param name="y">起点 Y。</param>
+        /// <param name="dir">通路方向。</param>
         /// <returns>是否成功放置通路。</returns>
         private bool MakeWay(int[,] matrix, uint sizeX, uint sizeY, List<RogueLikeOutputNumber> branchPoint,
             List<bool> isWay,
-            int x_, int y_, Direction dir_)
+            int x, int y, Direction dir)
         {
             var way_ = new RogueLikeOutputNumber();
-            way_.x = x_;
-            way_.y = y_;
+            way_.x = x;
+            way_.y = y;
 
             // 左右方向（横向通路）
             if (rand.Probability(0.5))
             {
                 way_.w = rand.Next(wayRange.x, wayRange.x + wayRange.w);
                 way_.h = 1;
-                switch (dir_)
+                switch (dir)
                 {
                     case Direction.North:
-                        way_.y = y_ - 1;
-                        if (rand.Probability(0.5)) way_.x = x_ - way_.w + 1;
+                        way_.y = y - 1;
+                        if (rand.Probability(0.5)) way_.x = x - way_.w + 1;
                         break;
                     case Direction.South:
-                        way_.y = y_ + 1;
-                        if (rand.Probability(0.5)) way_.x = x_ - way_.w + 1;
+                        way_.y = y + 1;
+                        if (rand.Probability(0.5)) way_.x = x - way_.w + 1;
                         break;
                     case Direction.West:
-                        way_.x = x_ - way_.w;
+                        way_.x = x - way_.w;
                         break;
                     case Direction.East:
-                        way_.x = x_ + 1;
+                        way_.x = x + 1;
                         break;
                 }
             }
@@ -312,45 +312,45 @@ namespace ReunionMovementDLL.Dungeon.Shape
                 way_.w = 1;
                 way_.h = rand.Next(wayRange.y, wayRange.y + wayRange.h);
 
-                switch (dir_)
+                switch (dir)
                 {
                     case Direction.North:
-                        way_.y = y_ - way_.h;
+                        way_.y = y - way_.h;
                         break;
                     case Direction.South:
-                        way_.y = y_ + 1;
+                        way_.y = y + 1;
                         break;
                     case Direction.West:
-                        way_.x = x_ - 1;
-                        if (rand.Probability(0.5)) way_.y = y_ - way_.h + 1;
+                        way_.x = x - 1;
+                        if (rand.Probability(0.5)) way_.y = y - way_.h + 1;
                         break;
                     case Direction.East:
-                        way_.x = x_ + 1;
-                        if (rand.Probability(0.5)) way_.y = y_ - way_.h + 1;
+                        way_.x = x + 1;
+                        if (rand.Probability(0.5)) way_.y = y - way_.h + 1;
                         break;
                 }
             }
 
             if (!PlaceOutputNumber(matrix, sizeX, sizeY, way_, rogueLikeList.wayId)) return false;
-            if (dir_ != Direction.South && way_.w != 1)
+            if (dir != Direction.South)
             {
                 branchPoint.Add(new RogueLikeOutputNumber(way_.x, way_.y - 1, way_.w, 1));
                 isWay.Add(true);
             }
 
-            if (dir_ != Direction.North && way_.w != 1)
+            if (dir != Direction.North)
             {
                 branchPoint.Add(new RogueLikeOutputNumber(way_.x, way_.y + way_.h, way_.w, 1));
                 isWay.Add(true);
             }
 
-            if (dir_ != Direction.East && way_.h != 1)
+            if (dir != Direction.East)
             {
                 branchPoint.Add(new RogueLikeOutputNumber(way_.x - 1, way_.y, 1, way_.h));
                 isWay.Add(true);
             }
 
-            if (dir_ != Direction.West && way_.h != 1)
+            if (dir != Direction.West)
             {
                 branchPoint.Add(new RogueLikeOutputNumber(way_.x + way_.w, way_.y, 1, way_.h));
                 isWay.Add(true);
@@ -368,61 +368,61 @@ namespace ReunionMovementDLL.Dungeon.Shape
         /// <param name="roomRect">已放置房间列表（用于添加）。</param>
         /// <param name="branchPoint">分支点列表（用于添加）。</param>
         /// <param name="isWay">对应分支点是否为通路列表（用于添加）。</param>
-        /// <param name="x_">基准 X 坐标。</param>
-        /// <param name="y_">基准 Y 坐标。</param>
-        /// <param name="dir_">房间相对于基准点的方向。</param>
+        /// <param name="x">基准 X 坐标。</param>
+        /// <param name="y">基准 Y 坐标。</param>
+        /// <param name="dir">房间相对于基准点的方向。</param>
         /// <param name="firstRoom">是否为最初的房间（影响分支点添加规则）。</param>
         /// <returns>是否成功放置房间。</returns>
         private bool MakeRoom(int[,] matrix, uint sizeX, uint sizeY, List<RogueLikeOutputNumber> roomRect,
-            List<RogueLikeOutputNumber> branchPoint, List<bool> isWay, int x_, int y_, Direction dir_,
+            List<RogueLikeOutputNumber> branchPoint, List<bool> isWay, int x, int y, Direction dir,
             bool firstRoom = false)
         {
             var room = new RogueLikeOutputNumber();
             room.w = rand.Next(roomRange.x, roomRange.x + roomRange.w);
             room.h = rand.Next(roomRange.y, roomRange.y + roomRange.h);
 
-            switch (dir_)
+            switch (dir)
             {
                 case Direction.North:
-                    room.x = x_ - room.w / 2;
-                    room.y = y_ - room.h;
+                    room.x = x - room.w / 2;
+                    room.y = y - room.h;
                     break;
                 case Direction.South:
-                    room.x = x_ - room.w / 2;
-                    room.y = y_ + 1;
+                    room.x = x - room.w / 2;
+                    room.y = y + 1;
                     break;
                 case Direction.West:
-                    room.x = x_ - room.w;
-                    room.y = y_; // 注释：修复方向为 West 或 East 时基点 Y 偏移的问题（保留原作者的备注）
+                    room.x = x - room.w;
+                    room.y = y; // 注释：修复方向为 West 或 East 时基点 Y 偏移的问题（保留原作者的备注）
                     break;
                 case Direction.East:
-                    room.x = x_ + 1;
-                    room.y = y_;
+                    room.x = x + 1;
+                    room.y = y;
                     break;
             }
 
             if (PlaceOutputNumber(matrix, sizeX, sizeY, room, rogueLikeList.roomId))
             {
                 roomRect.Add(room);
-                if (dir_ != Direction.South || firstRoom)
+                if (dir != Direction.South || firstRoom)
                 {
                     branchPoint.Add(new RogueLikeOutputNumber(room.x, room.y - 1, room.w, 1));
                     isWay.Add(false);
                 }
 
-                if (dir_ != Direction.North || firstRoom)
+                if (dir != Direction.North || firstRoom)
                 {
                     branchPoint.Add(new RogueLikeOutputNumber(room.x, room.y + room.h, room.w, 1));
                     isWay.Add(false);
                 }
 
-                if (dir_ != Direction.East || firstRoom)
+                if (dir != Direction.East || firstRoom)
                 {
                     branchPoint.Add(new RogueLikeOutputNumber(room.x - 1, room.y, 1, room.h));
                     isWay.Add(false);
                 }
 
-                if (dir_ != Direction.West || firstRoom)
+                if (dir != Direction.West || firstRoom)
                 {
                     branchPoint.Add(new RogueLikeOutputNumber(room.x + room.w, room.y, 1, room.h));
                     isWay.Add(false);
@@ -468,11 +468,11 @@ namespace ReunionMovementDLL.Dungeon.Shape
                 {
                     if (y == rect.y - 1 || x == rect.x - 1 || y == rect.y + rect.h || x == rect.x + rect.w)
                     {
-                        matrix[y, x] = rogueLikeList.insideWallId;
+                        matrix[startY + y, startX + x] = rogueLikeList.insideWallId;
                     }
                     else
                     {
-                        matrix[y, x] = tile;
+                        matrix[startY + y, startX + x] = tile;
                     }
                 }
             }

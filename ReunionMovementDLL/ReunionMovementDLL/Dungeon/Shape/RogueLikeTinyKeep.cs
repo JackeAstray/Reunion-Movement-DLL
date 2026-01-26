@@ -44,24 +44,139 @@ namespace ReunionMovementDLL.Dungeon.Shape
         }
 
         /// <summary>
-        /// 默认构造函数，创建 RogueLikeTinyKeep 的实例。
+        /// 默认构造函数。
         /// </summary>
         public RogueLikeTinyKeep()
         {
         }
 
         /// <summary>
-        /// 使用矩阵范围构造器，设置绘制区域。
+        /// 使用矩阵范围的构造函数。
         /// </summary>
-        /// <param name="matrixRange">矩阵范围（起点与大小）。param>
-        public RogueLikeTinyKeep(MatrixRange matrixRange) : base(matrixRange) { }
+        /// <param name="matrixRange">矩阵范围对象。</param>
+        public RogueLikeTinyKeep(MatrixRange matrixRange) : base(matrixRange)
+        {
+        }
 
         /// <summary>
-        /// 指定绘制值与最大通路数的构造函数。
+        /// 使用起始坐标与尺寸初始化的构造函数。
         /// </summary>
-        /// <param name="drawValue">绘制值列表（RogueLikeList）。param>
-        /// <param name="maxWay">最大通路数。</param>
-        public RogueLikeTinyKeep(RogueLikeList drawValue, uint maxWay) : base(drawValue, maxWay) { }
+        public RogueLikeTinyKeep(uint startX, uint startY, uint width, uint height) : base(startX, startY, width, height)
+        {
+        }
+
+        /// <summary>
+        /// 使用绘制值列表初始化的构造函数。
+        /// </summary>
+        /// <param name="drawValue">包含各类瓦片 ID 的列表。</param>
+        public RogueLikeTinyKeep(RogueLikeList drawValue) : base(drawValue)
+        {
+        }
+
+        /// <summary>
+        /// 初始化并指定最大通路数的构造函数。
+        /// </summary>
+        public RogueLikeTinyKeep(RogueLikeList drawValue, uint maxWay) : base(drawValue, maxWay)
+        {
+        }
+
+        /// <summary>
+        /// 初始化并指定最大通路数与房间范围的构造函数。
+        /// </summary>
+        public RogueLikeTinyKeep(RogueLikeList drawValue, uint maxWay, MatrixRange roomRange) : base(drawValue, maxWay,
+            roomRange)
+        {
+        }
+
+        /// <summary>
+        /// 初始化并指定绘制范围与通路范围的构造函数。
+        /// </summary>
+        public RogueLikeTinyKeep(RogueLikeList drawValue, uint maxWay, MatrixRange roomRange, MatrixRange wayRange) : base(
+            drawValue, maxWay, roomRange, wayRange)
+        {
+        }
+
+        /// <summary>
+        /// 使用各类瓦片 ID 初始化的构造函数。
+        /// </summary>
+        public RogueLikeTinyKeep(int outsideWallId, int insideWallId, int roomId, int entranceId, int wayId) : base(
+            outsideWallId, insideWallId, roomId, entranceId, wayId)
+        {
+        }
+
+        /// <summary>
+        /// 使用各类瓦片 ID 并指定最大通路数的构造函数。
+        /// </summary>
+        public RogueLikeTinyKeep(int outsideWallId, int insideWallId, int roomId, int entranceId, int wayId, uint maxWay) :
+            base(outsideWallId, insideWallId, roomId, entranceId, wayId, maxWay)
+        {
+        }
+
+        /// <summary>
+        /// 使用瓦片 ID、最大通路与房间范围初始化的构造函数。
+        /// </summary>
+        public RogueLikeTinyKeep(int outsideWallId, int insideWallId, int roomId, int entranceId, int wayId, uint maxWay,
+            MatrixRange roomRange) : base(outsideWallId, insideWallId, roomId, entranceId, wayId, maxWay, roomRange)
+        {
+        }
+
+        /// <summary>
+        /// 使用瓦片 ID、最大通路、房间范围与通路范围初始化的构造函数。
+        /// </summary>
+        public RogueLikeTinyKeep(int outsideWallId, int insideWallId, int roomId, int entranceId, int wayId, uint maxWay,
+            MatrixRange roomRange, MatrixRange wayRange) : base(outsideWallId, insideWallId, roomId, entranceId, wayId,
+            maxWay, roomRange, wayRange)
+        {
+        }
+
+        /// <summary>
+        /// 使用矩阵范围、绘制列表与最大通路数初始化的构造函数。
+        /// </summary>
+        public RogueLikeTinyKeep(MatrixRange matrixRange, RogueLikeList drawValue, uint maxWay) : base(matrixRange, drawValue,
+            maxWay)
+        {
+        }
+
+        /// <summary>
+        /// 使用矩阵范围、绘制列表、最大通路数与房间范围初始化的构造函数。
+        /// </summary>
+        public RogueLikeTinyKeep(MatrixRange matrixRange, RogueLikeList drawValue, uint maxWay, MatrixRange roomRange) : base(
+            matrixRange, drawValue, maxWay, roomRange)
+        {
+        }
+
+        /// <summary>
+        /// 使用矩阵范围、绘制列表、最大通路数、房间范围与通路范围初始化的构造函数。
+        /// </summary>
+        public RogueLikeTinyKeep(MatrixRange matrixRange, RogueLikeList drawValue, uint maxWay, MatrixRange roomRange,
+            MatrixRange wayRange) : base(matrixRange, drawValue, maxWay, roomRange, wayRange)
+        {
+        }
+
+        /// <summary>
+        /// 使用坐标、尺寸、绘制列表与最大通路数初始化的构造函数。
+        /// </summary>
+        public RogueLikeTinyKeep(uint startX, uint startY, uint width, uint height, RogueLikeList drawValue,
+            uint maxWay) : base(startX, startY, width, height, drawValue, maxWay)
+        {
+        }
+
+        /// <summary>
+        /// 使用坐标、尺寸、绘制列表、最大通路数与房间范围初始化的构造函数。
+        /// </summary>
+        public RogueLikeTinyKeep(uint startX, uint startY, uint width, uint height, RogueLikeList drawValue,
+            uint maxWay, MatrixRange roomRange) : base(startX, startY, width, height, drawValue, maxWay, roomRange)
+        {
+        }
+
+        /// <summary>
+        /// 使用坐标、尺寸、绘制列表、最大通路数、房间范围与通路范围初始化的构造函数。
+        /// </summary>
+        public RogueLikeTinyKeep(uint startX, uint startY, uint width, uint height, RogueLikeList drawValue,
+            uint maxWay, MatrixRange roomRange, MatrixRange wayRange) : base(startX, startY, width, height, drawValue,
+            maxWay, roomRange, wayRange)
+        {
+        }
 
         /// <summary>
         /// 在给定矩阵上绘制地牢（入口方法）。
